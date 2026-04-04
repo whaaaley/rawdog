@@ -24,6 +24,9 @@ const generateQuery = async (topic: string, context: string[]): Promise<string> 
       'You generate concise search engine queries.',
       'No quotes, no operators, just natural search terms.',
     ].join(' '),
+  }, {
+    role: 'user',
+    content: `Research topic: ${topic}`,
   }]
 
   if (context.length > 0) {
@@ -37,16 +40,11 @@ const generateQuery = async (topic: string, context: string[]): Promise<string> 
     })
   }
 
-  messages.push({
-    role: 'user',
-    content: `Research topic: ${topic}`,
-  })
-
   const result = querySchema.parse(JSON.parse(
     await structured({
       messages,
       schema: z.toJSONSchema(querySchema),
-      temperature: 0.3,
+      temperature: 0.1,
       max_tokens: 256,
     }),
   ))
