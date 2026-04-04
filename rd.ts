@@ -1,10 +1,12 @@
 #!/usr/bin/env -S deno run --allow-run --allow-net
 
+const root: string = new URL('.', import.meta.url).pathname
+
 const commands: Record<string, string> = {
-  ask: './tools/ask.ts',
-  commit: './tools/commit.ts',
-  research: './tools/research.ts',
-  search: './tools/search.ts',
+  ask: `${root}tools/ask.ts`,
+  commit: `${root}tools/commit.ts`,
+  research: `${root}tools/research.ts`,
+  search: `${root}tools/search.ts`,
 }
 
 const name = Deno.args[0]
