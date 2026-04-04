@@ -94,7 +94,7 @@ for (let i = 0; i < MAX_ITERATIONS; i++) {
   // Pick candidates
   const resultsText = fresh.map((r, j) => `${j}. ${r.title} — ${r.abstract}`).join('\n')
 
-  const candidatesResult = candidatesSchema.parse(
+  const candidatesResult = candidatesSchema.parse(JSON.parse(
     await structured({
       messages: [
         {
@@ -114,7 +114,7 @@ for (let i = 0; i < MAX_ITERATIONS; i++) {
       temperature: 0.1,
       max_tokens: 512,
     }),
-  )
+  ))
 
   // Fetch candidates
   const pages: string[] = []
@@ -142,7 +142,7 @@ for (let i = 0; i < MAX_ITERATIONS; i++) {
   context.push(...pages)
 
   // Evaluate
-  const evalResult = evaluateSchema.parse(
+  const evalResult = evaluateSchema.parse(JSON.parse(
     await structured({
       messages: [
         {
@@ -162,7 +162,7 @@ for (let i = 0; i < MAX_ITERATIONS; i++) {
       temperature: 0.2,
       max_tokens: 2048,
     }),
-  )
+  ))
 
   if (evalResult.sufficient) {
     console.log('\n--- answer ---\n')
