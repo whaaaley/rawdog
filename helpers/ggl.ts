@@ -1,18 +1,11 @@
-import { z } from 'zod'
 import { DOMParser } from '@b-fuze/deno-dom'
+import { searchResultSchema } from '../tools/search.schema.ts'
+import type { SearchResult } from '../tools/search.schema.ts'
 
 // GET + cookie replay + random sei param to avoid blocks, derived from googler
 // https://github.com/jarun/googler
 const GOOGLE_URL = 'https://www.google.com/search'
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-
-const SearchResult = z.object({
-  title: z.string(),
-  url: z.string(),
-  abstract: z.string(),
-})
-
-export type SearchResult = z.infer<typeof SearchResult>
 
 // Generate a random base64 string like googler's sei param
 const randomSei = () => {
@@ -101,7 +94,7 @@ export const googleSearch = async (query: string) => {
     const abstract = snippet?.textContent.trim() ?? ''
 
     if (title && url && url.startsWith('http')) {
-      results.push(SearchResult.parse({ title, url, abstract }))
+      results.push(searchResultSchema.parse({ title, url, abstract }))
     }
   }
 
