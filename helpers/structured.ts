@@ -22,8 +22,8 @@ export const structured = async (options: StructuredOptionsSchema): Promise<stri
       chat_template_kwargs: {
         enable_thinking: false,
       },
-      temperature: options.temperature ?? 0.3,
-      max_tokens: options.max_tokens ?? 2048,
+      temperature: options.temperature ?? 0.1,
+      max_tokens: options.max_tokens ?? 1024,
     }),
   })
 
