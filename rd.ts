@@ -1,10 +1,10 @@
 #!/usr/bin/env -S deno run --allow-run --allow-net
 
 const commands: Record<string, string> = {
-  ask: './tools/autoAsk.ts',
-  commit: './tools/autoCommit.ts',
-  research: './tools/autoResearch.ts',
-  search: './tools/autoSearch.ts',
+  ask: './tools/ask.ts',
+  commit: './tools/commit.ts',
+  research: './tools/research.ts',
+  search: './tools/search.ts',
 }
 
 const name = Deno.args[0]
