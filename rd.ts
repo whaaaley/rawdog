@@ -20,7 +20,7 @@ if (!name || !commands[name]) {
 }
 
 const cmd = new Deno.Command('deno', {
-  args: ['run', '--allow-run', '--allow-net', commands[name], ...args],
+  args: ['run', '--allow-run', '--allow-net', '--allow-read', commands[name], ...args],
   stdout: 'inherit',
   stderr: 'inherit',
   stdin: 'inherit',
