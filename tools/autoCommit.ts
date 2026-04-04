@@ -2,6 +2,7 @@
 
 import { exec } from '../helpers/exec.ts'
 import { complete } from '../helpers/complete.ts'
+import { safe } from '../helpers/safe.ts'
 
 const diff = (await exec('git', ['diff', '--cached'])).stdout
 
@@ -30,17 +31,10 @@ const content = await complete({
   max_tokens: 100,
 })
 
-let parsed
-try {
-  parsed = JSON.parse(content)
-} catch {
-  console.error('Failed to parse response:')
-  console.error(content)
-  Deno.exit(1)
-}
+const { data: parsed, error } = safe(() => JSON.parse(content))
 
-if (!parsed.type || !parsed.description) {
-  console.error('Failed to generate commit message')
+if (error || !parsed?.type || !parsed?.description) {
+  console.error('Failed to parse response:')
   console.error(content)
   Deno.exit(1)
 }
