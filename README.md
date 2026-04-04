@@ -6,16 +6,17 @@ optimized for local llm usage
 
 you don't need a harness to do things
 
-## setup (soon)
+personal collecction of tools
 
-~/.rawdog.json
+## usage
 
-```json
-{ "model": "", "baseUrl": "" }
-```
+llama.cpp on port 1234 running qwen3.5-9
 
 ## autoCommit
 
 ```sh
-commit
+> commit
+fix: improve error handling for commit message parsing
+[main 2facb05] fix: improve error handling for commit message parsing
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 ```
