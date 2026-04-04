@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "commit": "deno run --allow-run --allow-net tools/autoCommit.ts",
+    "build": "deno compile --allow-run --allow-net --output bin/rawdog-commit tools/autoCommit.ts"
+  },
+  "fmt": {
+    "lineWidth": 240,
+    "semiColons": false,
+    "singleQuote": true
+  }
+}
