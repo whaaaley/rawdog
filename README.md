@@ -18,9 +18,10 @@ llama.cpp on port 1234 running qwen3.5-9
 
 ```sh
 > rd commit
-fix: improve error handling for commit message parsing
-[main 2facb05] fix: improve error handling for commit message parsing
- 1 file changed, 4 insertions(+), 10 deletions(-)
+chore(tools): configure deno compiler options and lint rules
+Commit? [Y/n] y
+[main aded6a2] chore(tools): configure deno compiler options and lint rules
+ 1 file changed, 12 insertions(+)
 ```
 
 ## autoResearch
