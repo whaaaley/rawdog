@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --allow-run --allow-net
 
+import { z } from 'zod'
 import { exec } from '../helpers/exec.ts'
-import { complete } from '../helpers/complete.ts'
-import { safe } from '../helpers/safe.ts'
+import { structured } from '../helpers/complete.ts'
 
 const diff = (await exec('git', ['diff', '--cached'])).stdout
 
@@ -11,33 +11,22 @@ if (!diff) {
   Deno.exit(1)
 }
 
-const content = await complete({
+const commitSchema = z.object({
+  type: z.enum(['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']),
+  scope: z.string().optional(),
+  description: z.string().max(72),
+})
+
+const result = await structured({
   messages: [
     { role: 'system', content: 'Generate a conventional commit message from the diff. Use lowercase, imperative mood, no trailing punctuation.' },
     { role: 'user', content: diff },
   ],
-  schema: {
-    type: 'object',
-    properties: {
-      type: {
-        type: 'string',
-        enum: ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert'],
-      },
-      scope: { type: 'string' },
-      description: { type: 'string', maxLength: 72 },
-    },
-    required: ['type', 'description'],
-  },
+  schema: z.toJSONSchema(commitSchema),
   max_tokens: 100,
 })
 
-const { data: parsed, error } = safe(() => JSON.parse(content))
-
-if (error || !parsed?.type || !parsed?.description) {
-  console.error('Failed to parse response:')
-  console.error(content)
-  Deno.exit(1)
-}
+const parsed = commitSchema.parse(result)
 
 const msg = parsed.scope ? `${parsed.type}(${parsed.scope}): ${parsed.description}` : `${parsed.type}: ${parsed.description}`
 
