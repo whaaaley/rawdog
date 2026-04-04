@@ -1,10 +1,16 @@
 #!/usr/bin/env -S deno run --allow-net
 
+import { readAll } from '@std/io'
 import { stream } from '../helpers/stream.ts'
 
-const question: string = Deno.args.join(' ')
+const args: string = Deno.args.join(' ')
+// isTerminal() is false when data is piped in (e.g. echo "hi" | rd ask)
+// Without this guard, readAll would block forever waiting for EOF
+const stdin: string = Deno.stdin.isTerminal() ? '' : new TextDecoder().decode(await readAll(Deno.stdin))
+const question: string = [args, stdin].filter(Boolean).join('\n')
+
 if (!question) {
-  console.error('Usage: autoAsk <question>')
+  console.error('Usage: rd ask <question>')
   Deno.exit(1)
 }
 

@@ -28,6 +28,7 @@
   "imports": {
     "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.56",
     "@mozilla/readability": "npm:@mozilla/readability@^0.6.0",
+    "@std/io": "jsr:@std/io@^0.225.3",
     "zod": "npm:zod@^4.3.6"
   }
 }
