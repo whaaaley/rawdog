@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "commit": "deno run --allow-run --allow-net tools/autoCommit.ts",
+    "rd": "deno run --allow-run --allow-net rd.ts",
     "build": "deno compile --allow-run --allow-net --output bin/rawdog-commit tools/autoCommit.ts"
   },
   "fmt": {
@@ -9,6 +9,8 @@
     "singleQuote": true
   },
   "imports": {
+    "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.56",
+    "@mozilla/readability": "npm:@mozilla/readability@^0.6.0",
     "zod": "npm:zod@^4.3.6"
   }
 }
