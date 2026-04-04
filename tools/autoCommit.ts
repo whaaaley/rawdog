@@ -19,7 +19,7 @@ const commitSchema = z.object({
 
 const result = await structured({
   messages: [
-    { role: 'system', content: 'Generate a conventional commit message from the diff. Use lowercase, imperative mood, no trailing punctuation.' },
+    { role: 'system', content: 'You must generate a conventional commit message from the diff. You must describe the purpose and intent, not the literal content. You must use lowercase, imperative mood, no trailing punctuation.' },
     { role: 'user', content: diff },
   ],
   schema: z.toJSONSchema(commitSchema),
