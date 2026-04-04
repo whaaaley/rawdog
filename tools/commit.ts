@@ -9,7 +9,7 @@ import type { CommitSchema } from './commit.schema.ts'
 
 const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']
 const DEFAULT_SCOPES: string[] = []
-const DEFAULT_MAX_LENGTH = 72
+const DEFAULT_MAX_LENGTH = 96
 
 const raw = commitConfigSchema.parse(await loadConfig('commit.json'))
 
