@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { z } from 'zod'
-import { structured } from '../helpers/complete.ts'
+import { structured } from '../helpers/structured.ts'
 import { ddgSearch } from '../helpers/ddg.ts'
 import { fetchPage } from '../helpers/fetchPage.ts'
 import { summarize } from '../helpers/summarize.ts'
