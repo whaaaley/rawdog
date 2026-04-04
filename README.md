@@ -4,6 +4,8 @@
 
 optimized for local llm usage
 
+you don't need a harness to do things
+
 ## setup (soon)
 
 ~/.rawdog.json
