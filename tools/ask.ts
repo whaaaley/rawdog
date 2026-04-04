@@ -19,7 +19,7 @@ const readable: ReadableStream = await stream([{
   role: 'user',
   content: question,
 }], {
-  temperature: 0.3,
+  temperature: 0.1,
   max_tokens: 2048,
 })
 
