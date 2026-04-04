@@ -6,6 +6,7 @@ import { ddgSearch } from '../helpers/ddg.ts'
 import { fetchPage } from '../helpers/fetchPage.ts'
 import { summarize } from '../helpers/summarize.ts'
 import { candidatesSchema, evaluateSchema, querySchema } from './research.schema.ts'
+import type { MessageSchema } from '../helpers/structured.schema.ts'
 
 const MAX_ITERATIONS: number = 5
 const MAX_CANDIDATES: number = 3
@@ -16,45 +17,54 @@ if (!description) {
   Deno.exit(1)
 }
 
-const context: string[] = []
-const visited: Set<string> = new Set<string>()
+const generateQuery = async (topic: string, context: string[]): Promise<string> => {
+  const messages: MessageSchema[] = [{
+    role: 'system',
+    content: [
+      'You generate concise search engine queries.',
+      'No quotes, no operators, just natural search terms.',
+    ].join(' '),
+  }]
 
-for (let i = 0; i < MAX_ITERATIONS; i++) {
-  const queryMessages = [
-    {
-      role: 'system' as const,
+  if (context.length > 0) {
+    messages.push({
+      role: 'user',
       content: [
-        'You generate concise search engine queries.',
-        'No quotes, no operators, just natural search terms.',
-      ].join(' '),
-    },
-    ...context.length > 0
-      ? [{
-        role: 'user' as const,
-        content: `Previous research so far:\n${context.join('\n\n')}\n\nThis was not enough. Generate a different, more specific search query.`,
-      }]
-      : [],
-    {
-      role: 'user' as const,
-      content: `Research topic: ${description}`,
-    },
-  ]
+        `Previous research so far:\n${context.join('\n\n')}`,
+        'This was not enough.',
+        'Generate a different, more specific search query.',
+      ].join('\n\n'),
+    })
+  }
 
-  const queryResult = querySchema.parse(
+  messages.push({
+    role: 'user',
+    content: `Research topic: ${topic}`,
+  })
+
+  const result = querySchema.parse(JSON.parse(
     await structured({
-      messages: queryMessages,
+      messages,
       schema: z.toJSONSchema(querySchema),
       temperature: 0.3,
       max_tokens: 256,
     }),
-  )
+  ))
 
-  console.log(`\n[search ${i + 1}/${MAX_ITERATIONS}] ${queryResult.query}`)
+  return result.query
+}
+
+const context: string[] = []
+const visited: Set<string> = new Set<string>()
+
+for (let i = 0; i < MAX_ITERATIONS; i++) {
+  const query: string = await generateQuery(description, context)
+  console.log(`\n[search ${i + 1}/${MAX_ITERATIONS}] ${query}`)
 
   // Search
   let results
   try {
-    results = await ddgSearch(queryResult.query)
+    results = await ddgSearch(query)
   } catch (err) {
     console.error(`Search failed: ${err}`)
     continue
@@ -138,10 +148,10 @@ for (let i = 0; i < MAX_ITERATIONS; i++) {
         {
           role: 'system' as const,
           content: [
-          'You evaluate whether the gathered information is sufficient to answer the research topic.',
-          'Mark sufficient as true if you can give a solid, useful answer — it does not need to be exhaustive.',
-          'Only continue searching if critical information is clearly missing.',
-        ].join(' '),
+            'You evaluate whether the gathered information is sufficient to answer the research topic.',
+            'Mark sufficient as true if you can give a solid, useful answer — it does not need to be exhaustive.',
+            'Only continue searching if critical information is clearly missing.',
+          ].join(' '),
         },
         {
           role: 'user' as const,
