@@ -1,6 +1,5 @@
 type Message = { role: 'system' | 'user' | 'assistant'; content: string }
 
-// deno-lint-ignore no-explicit-any
 type CompletionOptions = {
   messages: Message[]
   schema?: Record<string, unknown>
