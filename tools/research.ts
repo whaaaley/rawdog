@@ -2,14 +2,16 @@
 
 import { z } from 'zod'
 import { structured } from '../helpers/structured.ts'
+import { safeAsync } from '../helpers/safe.ts'
 import { ddgSearch } from '../helpers/ddg.ts'
+import { searchResultSchema } from './search.schema.ts'
+import type { SearchResult } from './search.schema.ts'
 import { fetchPage } from '../helpers/fetchPage.ts'
 import { summarize } from '../helpers/summarize.ts'
-import { candidatesSchema, evaluateSchema, querySchema } from './research.schema.ts'
-import type { MessageSchema } from '../helpers/structured.schema.ts'
+import { candidatesSchema, querySchema } from './research.schema.ts'
+import { tracker } from '../helpers/tracker.ts'
 
-const MAX_ITERATIONS: number = 5
-const MAX_CANDIDATES: number = 3
+const MAX_ITERATIONS: number = 3
 
 const description: string = Deno.args.join(' ')
 if (!description) {
@@ -17,160 +19,130 @@ if (!description) {
   Deno.exit(1)
 }
 
-const generateQuery = async (topic: string, context: string[]): Promise<string> => {
-  const messages: MessageSchema[] = [{
-    role: 'system',
-    content: [
-      'You generate concise search engine queries.',
-      'No quotes, no operators, just natural search terms.',
-    ].join(' '),
-  }, {
-    role: 'user',
-    content: `Research topic: ${topic}`,
-  }]
-
-  if (context.length > 0) {
-    messages.push({
-      role: 'user',
-      content: [
-        `Previous research so far:\n${context.join('\n\n')}`,
-        'This was not enough.',
-        'Generate a different, more specific search query.',
-      ].join('\n\n'),
-    })
-  }
-
+const generateQuery = async (topic: string, previousQueries: string[]): Promise<string> => {
   const result = querySchema.parse(JSON.parse(
     await structured({
-      messages,
+      messages: [{
+        role: 'system',
+        content: [
+          'Generate a search query that explores a different angle of the topic.',
+          'Do not reuse or rearrange words from previous queries.',
+          'Focus on related subtopics, underlying concepts, or adjacent terminology.',
+        ].join(' '),
+      }, {
+        role: 'user',
+        content: `Topic: ${topic}\n\nDo not repeat these:\n${previousQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}`,
+      }],
       schema: z.toJSONSchema(querySchema),
-      temperature: 0.1,
-      max_tokens: 256,
+      temperature: 0.7,
+      max_tokens: 128,
     }),
   ))
 
   return result.query
 }
 
-const context: string[] = []
-const visited: Set<string> = new Set<string>()
+const search = async (query: string, visited: Set<string>): Promise<SearchResult[]> => {
+  const results: SearchResult[] = await ddgSearch(query)
 
-for (let i = 0; i < MAX_ITERATIONS; i++) {
-  const query: string = await generateQuery(description, context)
-  console.log(`\n[search ${i + 1}/${MAX_ITERATIONS}] ${query}`)
+  results.forEach((result, i) => {
+    console.log(`  ${i}. ${result.title}`)
+    console.log(`     ${result.url}`)
+  })
 
-  // Search
-  let results
-  try {
-    results = await ddgSearch(query)
-  } catch (err) {
-    console.error(`Search failed: ${err}`)
-    continue
-  }
-
-  if (results.length === 0) {
-    console.log('No results found')
-    continue
-  }
-
-  // Show results
-  for (let j = 0; j < results.length; j++) {
-    const r = results[j]
-    if (!r) continue
-    console.log(`  ${j}. ${r.title}`)
-    console.log(`     ${r.url}`)
-  }
-
-  // Filter out already-visited URLs before picking
-  const fresh = results.filter((r) => !visited.has(r.url))
-
-  if (fresh.length === 0) {
-    console.log('  All results already visited')
-    continue
-  }
-
-  // Pick candidates
-  const resultsText = fresh.map((r, j) => `${j}. ${r.title} — ${r.abstract}`).join('\n')
-
-  const candidatesResult = candidatesSchema.parse(JSON.parse(
-    await structured({
-      messages: [
-        {
-          role: 'system' as const,
-          content: [
-            `You pick the most relevant search results to fetch.`,
-            `Pick at most ${MAX_CANDIDATES}.`,
-            'Only pick results that are likely to contain useful information for the research topic.',
-          ].join(' '),
-        },
-        {
-          role: 'user' as const,
-          content: `Research topic: ${description}\n\nSearch results:\n${resultsText}`,
-        },
-      ],
-      schema: z.toJSONSchema(candidatesSchema),
-      temperature: 0.1,
-      max_tokens: 512,
-    }),
-  ))
-
-  // Fetch candidates
-  const pages: string[] = []
-
-  for (const pick of candidatesResult.picks) {
-    const result = fresh[pick.index]
-    if (!result) continue
-
-    visited.add(result.url)
-    console.log(`  -> fetching: ${result.title}`)
-
-    try {
-      const text = await fetchPage(result.url)
-      pages.push(`# ${result.title}\nURL: ${result.url}\n\n${text}`)
-    } catch (err) {
-      console.log(`     failed: ${err}`)
-    }
-  }
-
-  if (pages.length === 0) {
-    console.log('All fetches failed')
-    continue
-  }
-
-  context.push(...pages)
-
-  // Evaluate
-  const evalResult = evaluateSchema.parse(JSON.parse(
-    await structured({
-      messages: [
-        {
-          role: 'system' as const,
-          content: [
-            'You evaluate whether the gathered information is sufficient to answer the research topic.',
-            'Mark sufficient as true if you can give a solid, useful answer — it does not need to be exhaustive.',
-            'Only continue searching if critical information is clearly missing.',
-          ].join(' '),
-        },
-        {
-          role: 'user' as const,
-          content: `Research topic: ${description}\n\nGathered information:\n${context.join('\n\n---\n\n')}`,
-        },
-      ],
-      schema: z.toJSONSchema(evaluateSchema),
-      temperature: 0.2,
-      max_tokens: 2048,
-    }),
-  ))
-
-  if (evalResult.sufficient) {
-    console.log('\n--- answer ---\n')
-    await summarize(description, context)
-    Deno.exit(0)
-  }
-
-  console.log(`\n  [not enough] ${evalResult.summary}\n`)
+  return results.filter((r) => !visited.has(r.url))
 }
 
-// Ran out of iterations — give best-effort answer
-console.log('\n[max iterations reached, synthesizing best-effort answer]\n')
+const pickCandidates = async (topic: string, results: SearchResult[]): Promise<SearchResult[]> => {
+  const resultsText: string = results.map((r, i) => `${i}. ${r.title} — ${r.abstract}`).join('\n')
+
+  const result = candidatesSchema.parse(JSON.parse(
+    await structured({
+      messages: [{
+        role: 'system',
+        content: 'Pick the most relevant search results for the research topic.',
+      }, {
+        role: 'user',
+        content: `Research topic: ${topic}\n\nSearch results:\n${resultsText}`,
+      }],
+      schema: z.toJSONSchema(candidatesSchema),
+      temperature: 0.1,
+      max_tokens: 128,
+    }),
+  ))
+
+  return result.indices
+    .map((i) => searchResultSchema.safeParse(results[i]))
+    .filter((r) => r.success)
+    .map((r) => r.data)
+}
+
+const fetchPages = async (results: SearchResult[], visited: Set<string>): Promise<string[]> => {
+  results.forEach((r) => visited.add(r.url))
+
+  const lines = tracker(results.map((r) => r.title))
+
+  const promises = results.map(async (result, i) => {
+    const { data, error } = await safeAsync(() => fetchPage(result.url))
+
+    if (error) {
+      lines.fail(i)
+      return null
+    }
+
+    lines.done(i, data.status)
+
+    if (!data.text) {
+      return null
+    }
+
+    return `# ${result.title}\nURL: ${result.url}\n\n${data.text}`
+  })
+
+  const fetched = await Promise.all(promises)
+  return fetched
+    .map((p) => z.string().safeParse(p))
+    .filter((r) => r.success)
+    .map((r) => r.data)
+}
+
+const research = (topic: string): Promise<string[]> => {
+  const context: string[] = []
+  const queries: string[] = []
+  const visited: Set<string> = new Set()
+
+  const loop = async (iteration: number): Promise<string[]> => {
+    if (iteration >= MAX_ITERATIONS) {
+      return context
+    }
+
+    const query: string = await generateQuery(topic, queries)
+    queries.push(query)
+    console.log(`\n[search ${iteration + 1}/${MAX_ITERATIONS}] ${query}`)
+
+    const fresh: SearchResult[] = await search(query, visited)
+    if (fresh.length === 0) {
+      console.log('  No fresh results')
+      return loop(iteration + 1)
+    }
+
+    console.log()
+
+    const candidates: SearchResult[] = await pickCandidates(topic, fresh)
+    const pages: string[] = await fetchPages(candidates, visited)
+
+    if (pages.length === 0) {
+      console.log('All fetches failed')
+      return loop(iteration + 1)
+    }
+
+    context.push(...pages)
+    return loop(iteration + 1)
+  }
+
+  return loop(0)
+}
+
+const context: string[] = await research(description)
+console.log('\n--- answer ---\n')
 await summarize(description, context)

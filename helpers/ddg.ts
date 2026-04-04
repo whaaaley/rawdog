@@ -45,6 +45,7 @@ export const ddgSearch = async (query: string) => {
 
   for (let i = 0; i < links.length; i++) {
     const link = links[i]
+    if (!link) continue
     const title = link.textContent.trim()
     const href = link.getAttribute('href') ?? ''
     const abstract = snippets[i]?.textContent.trim() ?? ''

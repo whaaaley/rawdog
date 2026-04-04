@@ -4,9 +4,12 @@ import { Readability } from '@mozilla/readability'
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 const MAX_TEXT_LENGTH = 8000
 
-// Fetch a URL and extract readable text content
-// Uses Mozilla Readability, falls back to raw text extraction
-export const fetchPage = async (url: string) => {
+type FetchResult = {
+  status: number
+  text: string | null
+}
+
+export const fetchPage = async (url: string): Promise<FetchResult> => {
   const res = await fetch(url, {
     headers: {
       'User-Agent': USER_AGENT,
@@ -17,9 +20,10 @@ export const fetchPage = async (url: string) => {
   })
 
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
+    return { status: res.status, text: null }
   }
 
+  const status: number = res.status
   const html = await res.text()
   const doc = new DOMParser().parseFromString(html, 'text/html')
 
@@ -30,14 +34,14 @@ export const fetchPage = async (url: string) => {
   if (article?.textContent) {
     const text = article.textContent.trim()
     if (text.length > 0) {
-      return text.slice(0, MAX_TEXT_LENGTH)
+      return { status, text: text.slice(0, MAX_TEXT_LENGTH) }
     }
   }
 
   // Fallback: strip tags and grab body text
   const body = doc.querySelector('body')
   if (!body) {
-    throw new Error('No body element found')
+    return { status, text: null }
   }
 
   // Remove script and style elements
@@ -48,8 +52,8 @@ export const fetchPage = async (url: string) => {
   const text = body.textContent.trim()
 
   if (text.length === 0) {
-    throw new Error('No text content found')
+    return { status, text: null }
   }
 
-  return text.slice(0, MAX_TEXT_LENGTH)
+  return { status, text: text.slice(0, MAX_TEXT_LENGTH) }
 }
