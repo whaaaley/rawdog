@@ -9,15 +9,17 @@ const commands: Record<string, string> = {
   search: `${root}tools/search.ts`,
 }
 
-const name = Deno.args[0]
-const args = Deno.args.slice(1)
+const [name]: string[] = Deno.args
+const args: string[] = Deno.args.slice(1)
 
 if (!name || !commands[name]) {
   console.log('Usage: rd <command> [args]')
   console.log()
+
   for (const cmd of Object.keys(commands)) {
     console.log(`  ${cmd}`)
   }
+
   Deno.exit(1)
 }
 
