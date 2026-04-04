@@ -6,7 +6,9 @@ optimized for local llm usage
 
 you don't need a harness to do things
 
-personal collecction of tools
+personal collecction of tools (opinionated)
+
+zero config (fork to configure, i made it easy i hope)
 
 ## usage
 
