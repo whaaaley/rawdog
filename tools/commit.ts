@@ -1,38 +1,77 @@
-#!/usr/bin/env -S deno run --allow-run --allow-net
+#!/usr/bin/env -S deno run --allow-run --allow-net --allow-read
 
-import { z } from 'zod'
 import { exec } from '../helpers/exec.ts'
-import { structured } from '../helpers/complete.ts'
+import { structured } from '../helpers/structured.ts'
+import { loadConfig } from '../helpers/config.ts'
+import { confirm } from '../helpers/confirm.ts'
+import { commitConfigSchema, commitSchema } from './commit.schema.ts'
+import type { CommitSchema } from './commit.schema.ts'
 
-const stat = (await exec('git', ['diff', '--cached', '--stat'])).stdout
-const diff = (await exec('git', ['diff', '--cached'])).stdout
+const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']
+const DEFAULT_SCOPES: string[] = []
+const DEFAULT_MAX_LENGTH = 72
+
+const raw = commitConfigSchema.parse(await loadConfig('commit.json'))
+
+const types: string[] = raw.types ?? DEFAULT_TYPES
+const scopes: string[] = raw.scopes ?? DEFAULT_SCOPES
+const maxLength: number = raw.maxLength ?? DEFAULT_MAX_LENGTH
+
+const stat: string = (await exec('git', ['diff', '--cached', '--stat'])).stdout
+const diff: string = (await exec('git', ['diff', '--cached'])).stdout
 
 if (!diff) {
   console.error('Nothing staged')
   Deno.exit(1)
 }
 
-const commitSchema = z.object({
-  type: z.enum(['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']),
-  scope: z.string().optional(),
-  description: z.string().max(72),
-})
+const jsonSchema = {
+  type: 'object' as const,
+  properties: {
+    type: {
+      type: 'string',
+      enum: types,
+      description: 'Determined by the filenames in the stat, not by the diff content',
+    },
+    scope: {
+      type: 'string',
+      enum: scopes,
+      description: 'The area of the codebase that changed, determined by the filenames in the stat',
+    },
+    description: {
+      type: 'string',
+      maxLength: maxLength,
+      description: 'What changed, not what the changed content contains. Lowercase, imperative mood, no trailing punctuation',
+    },
+  },
+  required: ['type', 'description'],
+}
 
-const result = await structured({
-  messages: [
-    { role: 'system', content: 'You must generate a conventional commit message from the diff. You must describe the purpose and intent, not the literal content. You must determine the type from the files changed, not from the content of the diff. A change to a markdown file is docs, not feat. You must use lowercase, imperative mood, no trailing punctuation.' },
-    { role: 'user', content: `${stat}\n\n${diff}` },
-  ],
-  schema: z.toJSONSchema(commitSchema),
+const result: string = await structured({
+  messages: [{
+    role: 'system',
+    content: [
+      'Generate a conventional commit message from the diff.',
+      'A change to a markdown file is always typed as docs.',
+    ].join(' '),
+  }, {
+    role: 'user',
+    content: `Files changed:\n${stat}\n\nDiff:\n${diff}`,
+  }],
+  schema: jsonSchema,
   max_tokens: 100,
 })
 
-const parsed = commitSchema.parse(result)
-
-const msg = parsed.scope ? `${parsed.type}(${parsed.scope}): ${parsed.description}` : `${parsed.type}: ${parsed.description}`
+const parsed: CommitSchema = commitSchema.parse(JSON.parse(result))
+const msg: string = parsed.scope ? `${parsed.type}(${parsed.scope}): ${parsed.description}` : `${parsed.type}: ${parsed.description}`
 
 console.log(msg)
 
-const commit = new Deno.Command('git', { args: ['commit', '-m', msg], stdout: 'inherit', stderr: 'inherit' })
-const { code } = await commit.output()
-Deno.exit(code)
+if (!await confirm('Commit?')) {
+  Deno.exit(0)
+}
+
+const commit: Deno.Command = new Deno.Command('git', { args: ['commit', '-m', msg], stdout: 'inherit', stderr: 'inherit' })
+const output: Deno.CommandOutput = await commit.output()
+
+Deno.exit(output.code)
