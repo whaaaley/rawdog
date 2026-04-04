@@ -90,12 +90,12 @@ const fetchPages = async (results: SearchResult[], visited: Set<string>): Promis
       return null
     }
 
-    lines.done(i, data.status)
-
     if (!data.text) {
+      lines.empty(i)
       return null
     }
 
+    lines.done(i, data.status)
     return `# ${result.title}\nURL: ${result.url}\n\n${data.text}`
   })
 
