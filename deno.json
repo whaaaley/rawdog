@@ -1,7 +1,6 @@
 {
   "tasks": {
-    "rd": "deno run --allow-run --allow-net rd.ts",
-    "build": "deno compile --allow-run --allow-net --output bin/rawdog-commit tools/autoCommit.ts"
+    "rd": "deno run --allow-run --allow-net rd.ts"
   },
   "compilerOptions": {
     "noUnusedLocals": true,
