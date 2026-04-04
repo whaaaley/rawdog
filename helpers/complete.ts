@@ -17,6 +17,7 @@ const StructuredOptions = z.object({
 
 const ChatResponse = z.object({
   choices: z.array(z.object({
+    finish_reason: z.string(),
     message: z.object({
       content: z.string(),
     }),
@@ -34,10 +35,22 @@ export const structured = async (options: z.infer<typeof StructuredOptions>) => 
       response_format: { type: 'json_object', schema: options.schema },
       chat_template_kwargs: { enable_thinking: false },
       temperature: options.temperature ?? 0.3,
-      max_tokens: options.max_tokens ?? 256,
+      max_tokens: options.max_tokens ?? 2048,
     }),
   })
 
   const data = ChatResponse.parse(await res.json())
-  return JSON.parse(data.choices[0].message.content)
+  const choice = data.choices[0]
+
+  if (choice.finish_reason === 'length') {
+    throw new Error(`Response truncated (max_tokens too low): ${choice.message.content}`)
+  }
+
+  const raw = choice.message.content
+
+  try {
+    return JSON.parse(raw)
+  } catch {
+    throw new Error(`Failed to parse JSON: ${raw}`)
+  }
 }
