@@ -3,6 +3,18 @@
     "rd": "deno run --allow-run --allow-net rd.ts",
     "build": "deno compile --allow-run --allow-net --output bin/rawdog-commit tools/autoCommit.ts"
   },
+  "compilerOptions": {
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "lint": {
+    "rules": {
+      "include": ["explicit-function-return-type"]
+    }
+  },
   "fmt": {
     "lineWidth": 240,
     "semiColons": false,
