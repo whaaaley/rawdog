@@ -28,6 +28,14 @@ export const choiceSchema = z.object({
   }),
 })
 
+export const sseChunkSchema = z.object({
+  choices: z.array(z.object({
+    delta: z.object({
+      content: z.string().optional(),
+    }),
+  })),
+})
+
 export const chatResponseSchema = z.object({
   choices: z.array(choiceSchema),
 })
@@ -36,4 +44,5 @@ export type MessageSchema = z.infer<typeof messageSchema>
 export type CompletionOptionsSchema = z.infer<typeof completionOptionsSchema>
 export type StructuredOptionsSchema = z.infer<typeof structuredOptionsSchema>
 export type ChoiceSchema = z.infer<typeof choiceSchema>
+export type SseChunkSchema = z.infer<typeof sseChunkSchema>
 export type ChatResponseSchema = z.infer<typeof chatResponseSchema>

@@ -1,43 +1,42 @@
-const URL = 'http://localhost:1234/v1/chat/completions'
-const MODEL = 'qwen3.5-9b'
+import { sseChunkSchema } from './completion.schema.ts'
+import type { MessageSchema, SseChunkSchema } from './completion.schema.ts'
 
-type Message = {
-  role: 'system' | 'user' | 'assistant'
-  content: string
-}
+const URL: string = 'http://localhost:1234/v1/chat/completions'
+const MODEL: string = 'qwen3.5-9b'
 
 type StreamOptions = {
   temperature?: number
   max_tokens?: number
 }
 
-// Parse SSE lines into content deltas
-const sse = () => {
-  let buf = ''
+const sse = (): TransformStream<string, string> => {
+  let buf: string = ''
 
   return new TransformStream<string, string>({
-    transform(chunk, controller) {
+    transform(chunk: string, controller: TransformStreamDefaultController<string>): void {
       buf += chunk
 
-      const lines = buf.split('\n')
+      const lines: string[] = buf.split('\n')
       buf = lines.pop() ?? ''
 
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue
+      lines
+        .filter((line: string) => line.startsWith('data: '))
+        .map((line: string) => line.slice(6))
+        .forEach((data: string) => {
+          if (data === '[DONE]') return
 
-        const data = line.slice(6)
-        if (data === '[DONE]') return
+          const parsed: SseChunkSchema = sseChunkSchema.parse(JSON.parse(data))
+          const [choice]: SseChunkSchema['choices'] = parsed.choices
+          const content: string | undefined = choice?.delta?.content
 
-        const delta = JSON.parse(data).choices?.[0]?.delta?.content
-        if (delta) controller.enqueue(delta)
-      }
+          if (content) controller.enqueue(content)
+        })
     },
   })
 }
 
-// Returns a ReadableStream of text deltas from llama-server
-export const stream = async (messages: Message[], options?: StreamOptions) => {
-  const res = await fetch(URL, {
+export const stream = async (messages: MessageSchema[], options?: StreamOptions): Promise<ReadableStream<string>> => {
+  const res: Response = await fetch(URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
