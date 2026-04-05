@@ -8,13 +8,13 @@ const GOOGLE_URL = 'https://www.google.com/search'
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
 // Generate a random base64 string like googler's sei param
-const randomSei = () => {
+const randomSei = (): string => {
   const bytes = crypto.getRandomValues(new Uint8Array(24))
   return btoa(String.fromCharCode(...bytes))
 }
 
 // Extract real URL from Google's /url?q=<real_url>&sa=... redirect wrapper
-const unwrapUrl = (href: string) => {
+const unwrapUrl = (href: string): string => {
   if (href.startsWith('/url?')) {
     const params = new URLSearchParams(href.slice(5))
     return params.get('q') ?? href
@@ -22,7 +22,7 @@ const unwrapUrl = (href: string) => {
   return href
 }
 
-export const googleSearch = async (query: string) => {
+export const googleSearch = async (query: string): Promise<SearchResult[]> => {
   // First request to get cookies
   const params = new URLSearchParams({
     q: query,
@@ -57,7 +57,7 @@ export const googleSearch = async (query: string) => {
   // Capture and replay cookies
   const setCookie = init.headers.get('set-cookie')
   if (setCookie) {
-    const cookie = setCookie.split(';')[0]
+    const [cookie = '']: string[] = setCookie.split(';')
     headers['Cookie'] = cookie
   }
 
