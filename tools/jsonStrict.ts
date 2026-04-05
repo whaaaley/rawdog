@@ -1,8 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
-import { z } from 'zod'
 import { readAll } from '@std/io'
-import { completion } from '../helpers/completion.ts'
+import { completion, structured } from '../helpers/completion.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({
@@ -22,19 +21,19 @@ const toSchema = async (description: string): Promise<string> => {
   })
 }
 
-const extract = async (schema: string, content: string): Promise<string> => {
-  return await completion({
+const extract = async (content: string, schema: Record<string, unknown>): Promise<string> => {
+  return await structured({
     messages: [{
       role: 'system',
       content: [
-        'Extract structured data from the input as JSON matching the schema.',
+        'Extract structured data from the input.',
         'Null for undetermined fields.',
-        'Compact, no whitespace.',
       ].join(' '),
     }, {
       role: 'user',
-      content: `Schema: ${schema}\n---\n${content}`,
+      content,
     }],
+    schema,
     temperature: 0,
     max_tokens: 4096,
   })
@@ -44,7 +43,7 @@ const schemaArg: string = Deno.args.join(' ')
 const stdin: string = Deno.stdin.isTerminal() ? '' : new TextDecoder().decode(await readAll(Deno.stdin))
 
 if (!schemaArg) {
-  console.error('Usage: echo "content" | rd json \'{ name: string, age: number }\'')
+  console.error('Usage: echo "content" | rd jsonStrict \'{ name: string, age: number }\'')
   console.error('Schema: TypeScript type, example object, natural language, or JSON Schema')
   Deno.exit(1)
 }
@@ -54,17 +53,7 @@ if (!stdin) {
   Deno.exit(1)
 }
 
-const schemaRaw: string = await toSchema(schemaArg)
-const raw: string = await extract(schemaRaw, stdin)
-
-const validator = z.fromJSONSchema(JSON.parse(schemaRaw))
-const result = validator.safeParse(JSON.parse(raw))
-
-if (!result.success) {
-  console.error('validation failed:')
-  result.error.issues.forEach((issue) => {
-    console.error(`  ${issue.path.join('.')}: ${issue.message}`)
-  })
-}
+const schema: Record<string, unknown> = JSON.parse(await toSchema(schemaArg))
+const raw: string = await extract(stdin, schema)
 
 console.log(raw)

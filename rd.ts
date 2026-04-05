@@ -5,11 +5,13 @@ const root: string = new URL('.', import.meta.url).pathname
 const commands: Record<string, string> = {
   ask: `${root}tools/ask.ts`,
   commit: `${root}tools/commit.ts`,
+  fromSchema: `${root}tools/fromSchema.ts`,
   json: `${root}tools/json.ts`,
-  jsonfast: `${root}tools/jsonfast.ts`,
+  jsonStrict: `${root}tools/jsonStrict.ts`,
   research: `${root}tools/research.ts`,
   rewrite: `${root}tools/rewrite.ts`,
   search: `${root}tools/search.ts`,
+  toSchema: `${root}tools/toSchema.ts`,
 }
 
 const [name]: string[] = Deno.args
