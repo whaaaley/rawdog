@@ -7,7 +7,7 @@ import type { SearchResult } from '../tools/search.schema.ts'
 const DDG_URL = 'https://html.duckduckgo.com/html/'
 const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-export const ddgSearch = async (query: string) => {
+export const ddgSearch = async (query: string): Promise<SearchResult[]> => {
   const res = await fetch(DDG_URL, {
     method: 'POST',
     headers: {
@@ -46,6 +46,7 @@ export const ddgSearch = async (query: string) => {
   for (let i = 0; i < links.length; i++) {
     const link = links[i]
     if (!link) continue
+
     const title = link.textContent.trim()
     const href = link.getAttribute('href') ?? ''
     const abstract = snippets[i]?.textContent.trim() ?? ''
