@@ -5,18 +5,11 @@ import { structured } from '../helpers/completion.ts'
 import { config } from '../helpers/config.ts'
 import { confirm } from '../helpers/confirm.ts'
 import { commitSchema } from './commit.schema.ts'
-import type { ConfigSchema } from '../helpers/config.schema.ts'
 import type { CommitSchema } from './commit.schema.ts'
 
-const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']
-const DEFAULT_SCOPES: string[] = []
-const DEFAULT_MAX_LENGTH = 96
-
-const raw: ConfigSchema['commit'] = config.commit
-
-const types: string[] = raw.types ?? DEFAULT_TYPES
-const scopes: string[] = raw.scopes ?? DEFAULT_SCOPES
-const maxLength: number = raw.maxLength ?? DEFAULT_MAX_LENGTH
+const types: string[] = config.commit.types
+const scopes: string[] = config.commit.scopes
+const maxLength: number = config.commit.maxLength
 
 const stat: string = (await exec('git', ['diff', '--cached', '--stat'])).stdout
 const diff: string = (await exec('git', ['diff', '--cached'])).stdout
