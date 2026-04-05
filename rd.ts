@@ -6,7 +6,9 @@ const commands: Record<string, string> = {
   ask: `${root}tools/ask.ts`,
   commit: `${root}tools/commit.ts`,
   json: `${root}tools/json.ts`,
+  jsonfast: `${root}tools/jsonfast.ts`,
   research: `${root}tools/research.ts`,
+  rewrite: `${root}tools/rewrite.ts`,
   search: `${root}tools/search.ts`,
 }
 
@@ -25,7 +27,7 @@ if (!name || !commands[name]) {
 }
 
 const cmd = new Deno.Command('deno', {
-  args: ['run', '--allow-run', '--allow-net', '--allow-read', commands[name], ...args],
+  args: ['run', '--allow-run', '--allow-net', '--allow-read', '--allow-write', commands[name], ...args],
   stdout: 'inherit',
   stderr: 'inherit',
   stdin: 'inherit',
