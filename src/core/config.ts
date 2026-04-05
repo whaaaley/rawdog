@@ -1,4 +1,4 @@
-import { safe, safeAsync } from './safe.ts'
+import { safe, safeAsync } from '../utils/safe.utils.ts'
 import { configSchema } from './config.schema.ts'
 import type { ConfigSchema } from './config.schema.ts'
 

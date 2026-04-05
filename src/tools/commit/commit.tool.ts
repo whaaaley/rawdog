@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-run --allow-net --allow-read
 
-import { exec } from '../helpers/exec.ts'
-import { structured } from '../helpers/completion.ts'
-import { config } from '../helpers/config.ts'
-import { confirm } from '../helpers/confirm.ts'
+import { exec } from '../../utils/exec.utils.ts'
+import { structured } from '../../core/completion.ts'
+import { config } from '../../core/config.ts'
+import { confirm } from '../../utils/confirm.utils.ts'
 import { commitSchema } from './commit.schema.ts'
 import type { CommitSchema } from './commit.schema.ts'
 

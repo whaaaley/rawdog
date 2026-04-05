@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { readAll } from '@std/io'
-import { completion } from '../helpers/completion.ts'
+import { completion } from '../../core/completion.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({

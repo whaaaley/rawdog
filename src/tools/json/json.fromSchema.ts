@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { readAll } from '@std/io'
-import { structured } from '../helpers/completion.ts'
+import { structured } from '../../core/completion.ts'
 
 const schemaArg: string = Deno.args.join(' ')
 const stdin: string = Deno.stdin.isTerminal() ? '' : new TextDecoder().decode(await readAll(Deno.stdin))

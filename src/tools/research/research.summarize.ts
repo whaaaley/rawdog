@@ -1,4 +1,4 @@
-import { stream } from './stream.ts'
+import { stream } from '../../core/stream.ts'
 
 const encoder: TextEncoder = new TextEncoder()
 

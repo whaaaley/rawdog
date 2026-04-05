@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net
 
-import { completion } from '../helpers/completion.ts'
+import { completion } from '../../core/completion.ts'
 
 const description: string = Deno.args.join(' ')
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { readAll } from '@std/io'
-import { completion, structured } from '../helpers/completion.ts'
+import { completion, structured } from '../../core/completion.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({

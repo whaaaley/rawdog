@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net
 
-import { ddgSearch } from '../helpers/ddg.ts'
+import { ddgSearch } from './search.ddg.ts'
 
 const query = Deno.args.join(' ')
 

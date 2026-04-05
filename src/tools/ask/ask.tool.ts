@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { readAll } from '@std/io'
-import { stream } from '../helpers/stream.ts'
+import { stream } from '../../core/stream.ts'
 
 const args: string = Deno.args.join(' ')
 // isTerminal() is false when data is piped in (e.g. echo "hi" | rd ask)

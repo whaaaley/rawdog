@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { structured } from './completion.ts'
+import { structured } from '../../core/completion.ts'
 import { formatResponseSchema, parseResponseSchema } from './rewrite.schema.ts'
 import type { FormatResponse, Mode, ParseResponse } from './rewrite.schema.ts'
 

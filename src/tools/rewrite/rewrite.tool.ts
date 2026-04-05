@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-net --allow-read --allow-write
 
 import { parseArgs } from '@std/cli/parse-args'
-import { rewrite } from '../helpers/rewrite.ts'
-import type { RewriteArgs } from '../helpers/rewrite.schema.ts'
-import { rewriteArgsSchema } from '../helpers/rewrite.schema.ts'
+import { rewrite } from './rewrite.transform.ts'
+import type { RewriteArgs } from './rewrite.schema.ts'
+import { rewriteArgsSchema } from './rewrite.schema.ts'
 
 type RawArgs = ReturnType<typeof parseArgs>
 const raw: RawArgs = parseArgs(Deno.args, { string: ['mode'] })

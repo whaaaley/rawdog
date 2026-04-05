@@ -1,6 +1,6 @@
 import { DOMParser } from '@b-fuze/deno-dom'
 import { Readability } from '@mozilla/readability'
-import { config } from './config.ts'
+import { config } from '../../core/config.ts'
 
 const USER_AGENT: string = config.research.userAgent
 const MAX_TEXT_LENGTH: number = config.research.maxTextLength
