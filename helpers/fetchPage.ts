@@ -1,8 +1,9 @@
 import { DOMParser } from '@b-fuze/deno-dom'
 import { Readability } from '@mozilla/readability'
+import { config } from './config.ts'
 
-const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-const MAX_TEXT_LENGTH = 8000
+const USER_AGENT: string = config.research.userAgent
+const MAX_TEXT_LENGTH: number = config.research.maxTextLength
 
 type FetchResult = {
   status: number

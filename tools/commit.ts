@@ -2,7 +2,7 @@
 
 import { exec } from '../helpers/exec.ts'
 import { structured } from '../helpers/completion.ts'
-import { loadConfig } from '../helpers/config.ts'
+import { config } from '../helpers/config.ts'
 import { confirm } from '../helpers/confirm.ts'
 import { commitSchema } from './commit.schema.ts'
 import type { ConfigSchema } from '../helpers/config.schema.ts'
@@ -12,7 +12,6 @@ const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 
 const DEFAULT_SCOPES: string[] = []
 const DEFAULT_MAX_LENGTH = 96
 
-const config: ConfigSchema = await loadConfig()
 const raw: ConfigSchema['commit'] = config.commit
 
 const types: string[] = raw.types ?? DEFAULT_TYPES

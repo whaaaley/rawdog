@@ -4,7 +4,7 @@ import type { ConfigSchema } from './config.schema.ts'
 
 const FILENAME: string = 'rd.config.json'
 
-export const loadConfig = async (): Promise<ConfigSchema> => {
+const load = async (): Promise<ConfigSchema> => {
   const { data: raw, error: readError } = await safeAsync(() => Deno.readTextFile(FILENAME))
 
   if (readError) {
@@ -19,3 +19,5 @@ export const loadConfig = async (): Promise<ConfigSchema> => {
 
   return data
 }
+
+export const config: ConfigSchema = await load()

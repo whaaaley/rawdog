@@ -1,11 +1,12 @@
 import { DOMParser } from '@b-fuze/deno-dom'
 import { searchResultSchema } from '../tools/search.schema.ts'
 import type { SearchResult } from '../tools/search.schema.ts'
+import { config } from './config.ts'
 
 // GET + cookie replay + random sei param to avoid blocks, derived from googler
 // https://github.com/jarun/googler
-const GOOGLE_URL = 'https://www.google.com/search'
-const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+const GOOGLE_URL: string = config.research.googleUrl
+const USER_AGENT: string = config.research.userAgent
 
 // Generate a random base64 string like googler's sei param
 const randomSei = (): string => {

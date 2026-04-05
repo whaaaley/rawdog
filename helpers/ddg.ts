@@ -1,11 +1,12 @@
 import { DOMParser } from '@b-fuze/deno-dom'
 import { searchResultSchema } from '../tools/search.schema.ts'
 import type { SearchResult } from '../tools/search.schema.ts'
+import { config } from './config.ts'
 
 // POST + form params + DNT header to avoid CAPTCHAs, derived from ddgr
 // https://github.com/jarun/ddgr
-const DDG_URL = 'https://html.duckduckgo.com/html/'
-const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+const DDG_URL: string = config.research.ddgUrl
+const USER_AGENT: string = config.research.userAgent
 
 export const ddgSearch = async (query: string): Promise<SearchResult[]> => {
   const res = await fetch(DDG_URL, {
