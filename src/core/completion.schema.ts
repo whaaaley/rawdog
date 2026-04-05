@@ -31,7 +31,7 @@ export const choiceSchema = z.object({
 export const sseChunkSchema = z.object({
   choices: z.array(z.object({
     delta: z.object({
-      content: z.string().optional(),
+      content: z.string().nullable(),
     }),
   })),
 })

@@ -1,4 +1,4 @@
-import { sseChunkSchema, type MessageSchema, type SseChunkSchema } from './completion.schema.ts'
+import { type MessageSchema, type SseChunkSchema, sseChunkSchema } from './completion.schema.ts'
 import { config } from './config.ts'
 
 const URL: string = config.server.url
@@ -19,18 +19,19 @@ const sse = (): TransformStream<string, string> => {
       const lines: string[] = buf.split('\n')
       buf = lines.pop() ?? ''
 
-      lines
-        .filter((line: string) => line.startsWith('data: '))
-        .map((line: string) => line.slice(6))
-        .forEach((data: string) => {
-          if (data === '[DONE]') return
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue
 
-          const parsed: SseChunkSchema = sseChunkSchema.parse(JSON.parse(data))
-          const [choice]: SseChunkSchema['choices'] = parsed.choices
-          const content: string | undefined = choice?.delta?.content
+        const data: string = line.slice(6)
+        if (data === '[DONE]') continue
 
-          if (content) controller.enqueue(content)
-        })
+        const parsed: SseChunkSchema = sseChunkSchema.parse(JSON.parse(data))
+        const [choice]: SseChunkSchema['choices'] = parsed.choices
+        if (!choice) continue
+
+        const content: string | null = choice.delta.content
+        if (content) controller.enqueue(content)
+      }
     },
   })
 }
