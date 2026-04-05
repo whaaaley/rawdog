@@ -4,8 +4,8 @@ import { readAll } from '@std/io'
 import { completion, structured } from '../helpers/completion.ts'
 import { safe } from '../helpers/safe.ts'
 
-const toSchema = async (description: string): Promise<Record<string, unknown>> => {
-  const raw: string = await completion({
+const toSchema = async (description: string): Promise<string> => {
+  return await completion({
     messages: [{
       role: 'system',
       content: [
@@ -20,9 +20,6 @@ const toSchema = async (description: string): Promise<Record<string, unknown>> =
     temperature: 0,
     max_tokens: 2048,
   })
-
-  const cleaned: string = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-  return JSON.parse(cleaned)
 }
 
 const extract = async (content: string, schema: Record<string, unknown>): Promise<string> => {
@@ -57,8 +54,9 @@ if (!stdin) {
   Deno.exit(1)
 }
 
-const schema: Record<string, unknown> = await toSchema(schemaArg)
+const schema: Record<string, unknown> = JSON.parse(await toSchema(schemaArg))
 const raw: string = await extract(stdin, schema)
+
 const { data: parsed, error } = safe(() => JSON.parse(raw))
 
 if (error) {
