@@ -1,16 +1,20 @@
 import { safe, safeAsync } from './safe.ts'
+import { configSchema } from './config.schema.ts'
+import type { ConfigSchema } from './config.schema.ts'
 
-export const loadConfig = async (filename: string) => {
-  const { data: raw, error: readError } = await safeAsync(() => Deno.readTextFile(filename))
+const FILENAME: string = 'rd.config.json'
+
+export const loadConfig = async (): Promise<ConfigSchema> => {
+  const { data: raw, error: readError } = await safeAsync(() => Deno.readTextFile(FILENAME))
 
   if (readError) {
-    return {}
+    return configSchema.parse({})
   }
 
-  const { data, error: parseError } = safe(() => JSON.parse(raw))
+  const { data, error: parseError } = safe(() => configSchema.parse(JSON.parse(raw)))
 
   if (parseError) {
-    throw new Error(`Failed to parse JSON: ${filename}`)
+    throw new Error(`Failed to parse JSON: ${FILENAME}`)
   }
 
   return data

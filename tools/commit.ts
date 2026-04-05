@@ -4,14 +4,16 @@ import { exec } from '../helpers/exec.ts'
 import { structured } from '../helpers/completion.ts'
 import { loadConfig } from '../helpers/config.ts'
 import { confirm } from '../helpers/confirm.ts'
-import { commitConfigSchema, commitSchema } from './commit.schema.ts'
+import { commitSchema } from './commit.schema.ts'
+import type { ConfigSchema } from '../helpers/config.schema.ts'
 import type { CommitSchema } from './commit.schema.ts'
 
 const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']
 const DEFAULT_SCOPES: string[] = []
 const DEFAULT_MAX_LENGTH = 96
 
-const raw = commitConfigSchema.parse(await loadConfig('commit.json'))
+const config: ConfigSchema = await loadConfig()
+const raw: ConfigSchema['commit'] = config.commit
 
 const types: string[] = raw.types ?? DEFAULT_TYPES
 const scopes: string[] = raw.scopes ?? DEFAULT_SCOPES
