@@ -46,8 +46,8 @@ const search = async (query: string, visited: Set<string>): Promise<SearchResult
   const results: SearchResult[] = await ddgSearch(query)
 
   results.forEach((result, i) => {
-    console.log(`  ${i}. ${result.title}`)
-    console.log(`     ${result.url}`)
+    console.error(`  ${i}. ${result.title}`)
+    console.error(`     ${result.url}`)
   })
 
   return results.filter((r) => !visited.has(r.url))
@@ -118,21 +118,21 @@ const research = (topic: string): Promise<string[]> => {
 
     const query: string = await generateQuery(topic, queries)
     queries.push(query)
-    console.log(`\n[search ${iteration + 1}/${MAX_ITERATIONS}] ${query}`)
+    console.error(`\n[search ${iteration + 1}/${MAX_ITERATIONS}] ${query}`)
 
     const fresh: SearchResult[] = await search(query, visited)
     if (fresh.length === 0) {
-      console.log('  No fresh results')
+      console.error('  No fresh results')
       return loop(iteration + 1)
     }
 
-    console.log()
+    console.error()
 
     const candidates: SearchResult[] = await pickCandidates(topic, fresh)
     const pages: string[] = await fetchPages(candidates, visited)
 
     if (pages.length === 0) {
-      console.log('All fetches failed')
+      console.error('All fetches failed')
       return loop(iteration + 1)
     }
 
@@ -144,5 +144,5 @@ const research = (topic: string): Promise<string[]> => {
 }
 
 const context: string[] = await research(description)
-console.log('\n--- answer ---\n')
+console.error('\n--- answer ---\n')
 await summarize(description, context)

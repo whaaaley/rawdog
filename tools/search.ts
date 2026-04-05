@@ -5,7 +5,7 @@ import { ddgSearch } from '../helpers/ddg.ts'
 const query = Deno.args.join(' ')
 
 if (!query) {
-  console.error('Usage: autoSearch <query>')
+  console.error('Usage: rd search <query>')
   Deno.exit(1)
 }
 

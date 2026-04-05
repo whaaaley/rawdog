@@ -18,11 +18,11 @@ const [name]: string[] = Deno.args
 const args: string[] = Deno.args.slice(1)
 
 if (!name || !commands[name]) {
-  console.log('Usage: rd <command> [args]')
-  console.log()
+  console.error('Usage: rd <command> [args]')
+  console.error()
 
   for (const cmd of Object.keys(commands)) {
-    console.log(`  ${cmd}`)
+    console.error(`  ${cmd}`)
   }
 
   Deno.exit(1)

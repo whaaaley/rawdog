@@ -11,11 +11,11 @@ const raw: RawArgs = parseArgs(Deno.args, { string: ['mode'] })
 const [file]: (string | number)[] = raw._
 const args: RewriteArgs = rewriteArgsSchema.parse({ file, mode: raw.mode })
 
-console.log(`parsing ${args.file}...`)
+console.error(`parsing ${args.file}...`)
 
 const input: string = await Deno.readTextFile(args.file)
 const rules: string[] = await rewrite(input, args.mode)
 
 await Deno.writeTextFile(args.file, rules.join('\n\n') + '\n')
 
-console.log(`rewrote ${args.file} (${rules.length} rules, mode: ${args.mode})`)
+console.error(`rewrote ${args.file} (${rules.length} rules, mode: ${args.mode})`)
