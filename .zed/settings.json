@@ -17,6 +17,9 @@
         "!eslint"
       ],
       "formatter": "language_server"
+    },
+    "Markdown": {
+      "format_on_save": "off"
     }
   },
   "format_on_save": "on"
