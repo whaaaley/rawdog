@@ -1,13 +1,12 @@
 import { stream } from './stream.ts'
 
-const encoder = new TextEncoder()
+const encoder: TextEncoder = new TextEncoder()
 
-// Stream a synthesized answer to stdout from gathered research context
-export const summarize = async (topic: string, context: string[]) => {
-  const readable = await stream([
+export const summarize = async (topic: string, context: string[]): Promise<void> => {
+  const readable: ReadableStream<string> = await stream([
     {
       role: 'system',
-      content: 'You synthesize research into a clear, thorough answer. Write naturally. Include specific details, names, dates, and sources when available. Be direct — no filler.',
+      content: 'You synthesize research into a clear, thorough answer. Write naturally. Include specific details, names, dates, and sources when available. Be direct, no filler.',
     },
     {
       role: 'user',
