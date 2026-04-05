@@ -5,6 +5,7 @@ const root: string = new URL('.', import.meta.url).pathname
 const commands: Record<string, string> = {
   ask: `${root}tools/ask.ts`,
   commit: `${root}tools/commit.ts`,
+  json: `${root}tools/json.ts`,
   research: `${root}tools/research.ts`,
   search: `${root}tools/search.ts`,
 }

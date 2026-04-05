@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { z } from 'zod'
-import { structured } from '../helpers/structured.ts'
+import { structured } from '../helpers/completion.ts'
 import { safeAsync } from '../helpers/safe.ts'
 import { ddgSearch } from '../helpers/ddg.ts'
 import { searchResultSchema } from './search.schema.ts'
