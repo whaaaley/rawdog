@@ -1,10 +1,10 @@
-import { chatResponseSchema } from './completion.schema.ts'
-import type { ChatResponseSchema, ChoiceSchema, CompletionOptionsSchema, StructuredOptionsSchema } from './completion.schema.ts'
+import { chatResponseSchema, type ChatResponseSchema, type ChoiceSchema, type CompletionOptionsSchema, type StructuredOptionsSchema } from './completion.schema.ts'
+import { config } from './config.ts'
 
 // https://github.com/ggerganov/llama.cpp/blob/master/tools/server/README.md#post-v1chatcompletions
 
-const URL: string = 'http://localhost:1234/v1/chat/completions'
-const MODEL: string = 'qwen3.5-9b'
+const URL: string = config.server.url
+const MODEL: string = config.server.model
 
 export const completion = async (options: CompletionOptionsSchema): Promise<string> => {
   const body: Record<string, unknown> = {

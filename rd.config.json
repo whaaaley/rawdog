@@ -1,7 +1,11 @@
 {
+  "server": {
+    "url": "http://localhost:1234/v1/chat/completions",
+    "model": "qwen3.5-9b"
+  },
   "commit": {
     "types": ["feat", "fix", "refactor", "docs", "chore", "build", "test", "perf", "style", "ci", "revert"],
-    "scopes": ["tools", "helpers", "cli"],
+    "scopes": ["core", "tools", "utils"],
     "maxLength": 72
   },
   "research": {

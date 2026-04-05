@@ -2,6 +2,7 @@
 
 import { readAll } from '@std/io'
 import { completion, structured } from '../../core/completion.ts'
+import { jsonObjectSchema, type JsonObject } from './json.schema.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({
@@ -21,7 +22,7 @@ const toSchema = async (description: string): Promise<string> => {
   })
 }
 
-const extract = async (content: string, schema: Record<string, unknown>): Promise<string> => {
+const extract = async (content: string, schema: JsonObject): Promise<string> => {
   return await structured({
     messages: [{
       role: 'system',
@@ -53,7 +54,7 @@ if (!stdin) {
   Deno.exit(1)
 }
 
-const schema: Record<string, unknown> = JSON.parse(await toSchema(schemaArg))
+const schema: JsonObject = jsonObjectSchema.parse(JSON.parse(await toSchema(schemaArg)))
 const raw: string = await extract(stdin, schema)
 
 console.log(raw)

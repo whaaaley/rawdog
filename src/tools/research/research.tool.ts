@@ -2,16 +2,16 @@
 
 import { z } from 'zod'
 import { structured } from '../../core/completion.ts'
+import { config } from '../../core/config.ts'
 import { safeAsync } from '../../utils/safe.utils.ts'
 import { ddgSearch } from '../search/search.ddg.ts'
-import { searchResultSchema } from '../search/search.schema.ts'
-import type { SearchResult } from '../search/search.schema.ts'
+import { searchResultSchema, type SearchResult } from '../search/search.schema.ts'
 import { fetchPage } from './research.fetch.ts'
 import { summarize } from './research.summarize.ts'
 import { candidatesSchema, querySchema } from './research.schema.ts'
 import { tracker } from './research.tracker.ts'
 
-const MAX_ITERATIONS: number = 3
+const MAX_ITERATIONS: number = config.research.maxIterations
 
 const description: string = Deno.args.join(' ')
 if (!description) {

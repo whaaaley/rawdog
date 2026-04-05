@@ -1,6 +1,5 @@
 import { safe, safeAsync } from '../utils/safe.utils.ts'
-import { configSchema } from './config.schema.ts'
-import type { ConfigSchema } from './config.schema.ts'
+import { configSchema, type ConfigSchema } from './config.schema.ts'
 
 const FILENAME: string = 'rd.config.json'
 

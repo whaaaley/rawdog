@@ -1,6 +1,5 @@
 import { DOMParser } from '@b-fuze/deno-dom'
-import { searchResultSchema } from './search.schema.ts'
-import type { SearchResult } from './search.schema.ts'
+import { searchResultSchema, type SearchResult } from './search.schema.ts'
 import { config } from '../../core/config.ts'
 
 // GET + cookie replay + random sei param to avoid blocks, derived from googler

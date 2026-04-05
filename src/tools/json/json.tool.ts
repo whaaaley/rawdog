@@ -3,6 +3,7 @@
 import { z } from 'zod'
 import { readAll } from '@std/io'
 import { completion } from '../../core/completion.ts'
+import { jsonObjectSchema } from './json.schema.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({
@@ -57,7 +58,7 @@ if (!stdin) {
 const schemaRaw: string = await toSchema(schemaArg)
 const raw: string = await extract(schemaRaw, stdin)
 
-const validator = z.fromJSONSchema(JSON.parse(schemaRaw))
+const validator = z.fromJSONSchema(jsonObjectSchema.parse(JSON.parse(schemaRaw)))
 const result = validator.safeParse(JSON.parse(raw))
 
 if (!result.success) {

@@ -2,8 +2,7 @@
 
 import { parseArgs } from '@std/cli/parse-args'
 import { rewrite } from './rewrite.transform.ts'
-import type { RewriteArgs } from './rewrite.schema.ts'
-import { rewriteArgsSchema } from './rewrite.schema.ts'
+import { rewriteArgsSchema, type RewriteArgs } from './rewrite.schema.ts'
 
 type RawArgs = ReturnType<typeof parseArgs>
 const raw: RawArgs = parseArgs(Deno.args, { string: ['mode'] })

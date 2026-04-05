@@ -4,8 +4,7 @@ import { exec } from '../../utils/exec.utils.ts'
 import { structured } from '../../core/completion.ts'
 import { config } from '../../core/config.ts'
 import { confirm } from '../../utils/confirm.utils.ts'
-import { commitSchema } from './commit.schema.ts'
-import type { CommitSchema } from './commit.schema.ts'
+import { commitSchema, type CommitSchema } from './commit.schema.ts'
 
 const types: string[] = config.commit.types
 const scopes: string[] = config.commit.scopes

@@ -1,8 +1,8 @@
-import { sseChunkSchema } from './completion.schema.ts'
-import type { MessageSchema, SseChunkSchema } from './completion.schema.ts'
+import { sseChunkSchema, type MessageSchema, type SseChunkSchema } from './completion.schema.ts'
+import { config } from './config.ts'
 
-const URL: string = 'http://localhost:1234/v1/chat/completions'
-const MODEL: string = 'qwen3.5-9b'
+const URL: string = config.server.url
+const MODEL: string = config.server.model
 
 type StreamOptions = {
   temperature?: number

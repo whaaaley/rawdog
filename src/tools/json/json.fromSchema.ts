@@ -2,6 +2,7 @@
 
 import { readAll } from '@std/io'
 import { structured } from '../../core/completion.ts'
+import { jsonObjectSchema, type JsonObject } from './json.schema.ts'
 
 const schemaArg: string = Deno.args.join(' ')
 const stdin: string = Deno.stdin.isTerminal() ? '' : new TextDecoder().decode(await readAll(Deno.stdin))
@@ -17,7 +18,7 @@ if (!stdin) {
   Deno.exit(1)
 }
 
-const schema: Record<string, unknown> = JSON.parse(schemaArg)
+const schema: JsonObject = jsonObjectSchema.parse(JSON.parse(schemaArg))
 
 const raw: string = await structured({
   messages: [{

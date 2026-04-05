@@ -12,6 +12,10 @@ optional `rd.config.json` in the project root. all fields have defaults
 
 ```json
 {
+  "server": {
+    "url": "http://localhost:1234/v1/chat/completions",
+    "model": "qwen3.5-9b"
+  },
   "commit": {
     "types": ["feat", "fix", "build", "chore", "ci", "docs", "style", "refactor", "perf", "test", "revert"],
     "scopes": [],
@@ -20,6 +24,7 @@ optional `rd.config.json` in the project root. all fields have defaults
   "research": {
     "userAgent": "Mozilla/5.0 ...",
     "maxTextLength": 8000,
+    "maxIterations": 3,
     "ddgUrl": "https://html.duckduckgo.com/html/",
     "googleUrl": "https://www.google.com/search"
   }
