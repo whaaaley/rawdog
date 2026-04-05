@@ -62,9 +62,7 @@ export const googleSearch = async (query: string) => {
   }
 
   // Follow through if we got a redirect, otherwise use the initial response
-  const res = init.redirected || init.status >= 300
-    ? await fetch(`${GOOGLE_URL}?${params}`, { headers })
-    : init
+  const res = init.redirected || init.status >= 300 ? await fetch(`${GOOGLE_URL}?${params}`, { headers }) : init
 
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
