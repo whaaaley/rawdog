@@ -6,31 +6,6 @@ local llm tools. opinionated. zero config. fork to configure
 
 llama.cpp on port 1234 running qwen3.5-9B Q4_K_M
 
-## structure
-
-```
-rd.ts                              entry point / dispatcher
-rd.config.json                     config (optional)
-src/
-  core/
-    config.ts                      singleton config loader
-    config.schema.ts               config schema + defaults
-    completion.ts                  non-streaming LLM client
-    completion.schema.ts           request/response schemas
-    stream.ts                      SSE streaming LLM client
-  utils/
-    safe.utils.ts                  Result<T> wrapper
-    exec.utils.ts                  shell exec helper
-    confirm.utils.ts               y/n prompt
-  tools/
-    ask/          ask.tool.ts
-    commit/       commit.tool.ts   commit.schema.ts
-    json/         json.tool.ts     json.strict.ts   json.fromSchema.ts   json.toSchema.ts
-    research/     research.tool.ts research.schema.ts research.fetch.ts research.summarize.ts research.tracker.ts
-    rewrite/      rewrite.tool.ts  rewrite.schema.ts  rewrite.transform.ts
-    search/       search.tool.ts   search.schema.ts   search.ddg.ts   search.ggl.ts
-```
-
 ## config
 
 optional `rd.config.json` in the project root. all fields have defaults
