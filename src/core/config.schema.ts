@@ -13,6 +13,8 @@ const DEFAULT_MAX_ITERATIONS: number = 3
 const DEFAULT_DDG_URL: string = 'https://html.duckduckgo.com/html/'
 const DEFAULT_GOOGLE_URL: string = 'https://www.google.com/search'
 
+const DEFAULT_TODO_NAME: string = 'TODO.md'
+
 const serverSchema = z.object({
   url: z.string().default(DEFAULT_URL),
   model: z.string().default(DEFAULT_MODEL),
@@ -32,6 +34,10 @@ const researchSchema = z.object({
   googleUrl: z.string().default(DEFAULT_GOOGLE_URL),
 })
 
+const todoSchema = z.object({
+  name: z.string().default(DEFAULT_TODO_NAME),
+})
+
 export const configSchema = z.object({
   server: serverSchema.default({
     url: DEFAULT_URL,
@@ -48,6 +54,9 @@ export const configSchema = z.object({
     maxIterations: DEFAULT_MAX_ITERATIONS,
     ddgUrl: DEFAULT_DDG_URL,
     googleUrl: DEFAULT_GOOGLE_URL,
+  }),
+  todo: todoSchema.default({
+    name: DEFAULT_TODO_NAME,
   }),
 })
 
