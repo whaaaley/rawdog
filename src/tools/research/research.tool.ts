@@ -66,7 +66,7 @@ const pickCandidates = async (topic: string, results: SearchResult[]): Promise<S
         content: `Research topic: ${topic}\n\nSearch results:\n${resultsText}`,
       }],
       schema: z.toJSONSchema(candidatesSchema),
-      temperature: 0.1,
+      temperature: 0.2,
       max_tokens: 128,
     }),
   ))
