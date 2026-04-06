@@ -1,6 +1,8 @@
 {
   "tasks": {
-    "rd": "deno run --allow-run --allow-net rd.ts"
+    "rd": "deno run --allow-run --allow-net rd.ts",
+    "test": "deno test --allow-read --allow-write --ignore=src/tools/todo/todo.completions.test.ts,src/tools/todo/todo.dogfood.test.ts --coverage=coverage && deno coverage --detailed coverage",
+    "test:llm": "deno test --allow-read --allow-net --allow-env src/tools/todo/todo.completions.test.ts src/tools/todo/todo.dogfood.test.ts"
   },
   "compilerOptions": {
     "noUnusedLocals": true,
@@ -27,8 +29,16 @@
   "imports": {
     "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.56",
     "@mozilla/readability": "npm:@mozilla/readability@^0.6.0",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/cli": "jsr:@std/cli@^1.0.28",
     "@std/io": "jsr:@std/io@^0.225.3",
+    "@std/testing": "jsr:@std/testing@^1.0.17",
+    "@types/mdast": "npm:@types/mdast@^4.0.4",
+    "mdast": "npm:@types/mdast@^4.0.4",
+    "mdast-util-from-markdown": "npm:mdast-util-from-markdown@^2.0.3",
+    "mdast-util-gfm": "npm:mdast-util-gfm@^3.1.0",
+    "mdast-util-to-markdown": "npm:mdast-util-to-markdown@^2.1.2",
+    "micromark-extension-gfm": "npm:micromark-extension-gfm@^3.0.0",
     "zod": "npm:zod@^4.3.6"
   }
 }
