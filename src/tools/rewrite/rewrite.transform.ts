@@ -62,7 +62,7 @@ export const parse = async (input: string): Promise<ParseResponse> => {
         content: input,
       }],
       schema: z.toJSONSchema(parseResponseSchema),
-      temperature: 0.1,
+      temperature: 0.2,
       max_tokens: 2048,
     }),
   ))
@@ -81,7 +81,7 @@ export const format = async (parsed: ParseResponse, mode: Mode = 'balanced'): Pr
         content: JSON.stringify(parsed),
       }],
       schema: z.toJSONSchema(formatResponseSchema),
-      temperature: 0.1,
+      temperature: 0.2,
       max_tokens: 2048,
     }),
   ))
