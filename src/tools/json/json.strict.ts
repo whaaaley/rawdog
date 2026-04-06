@@ -17,7 +17,7 @@ const toSchema = async (description: string): Promise<string> => {
       role: 'user',
       content: description,
     }],
-    temperature: 0,
+    temperature: 0.2,
     max_tokens: 2048,
   })
 }
@@ -35,7 +35,7 @@ const extract = async (content: string, schema: JsonObject): Promise<string> => 
       content,
     }],
     schema,
-    temperature: 0,
+    temperature: 0.2,
     max_tokens: 4096,
   })
 }

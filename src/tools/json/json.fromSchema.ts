@@ -32,7 +32,7 @@ const raw: string = await structured({
     content: stdin,
   }],
   schema,
-  temperature: 0,
+  temperature: 0.2,
   max_tokens: 4096,
 })
 

@@ -22,7 +22,7 @@ const raw: string = await completion({
     role: 'user',
     content: description,
   }],
-  temperature: 0,
+  temperature: 0.2,
   max_tokens: 2048,
 })
 
