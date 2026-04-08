@@ -25,8 +25,10 @@ const sse = (): TransformStream<string, string> => {
         const data: string = line.slice(6)
         if (data === '[DONE]') continue
 
-        const parsed: SseChunkSchema = sseChunkSchema.parse(JSON.parse(data))
-        const [choice]: SseChunkSchema['choices'] = parsed.choices
+        const result = sseChunkSchema.safeParse(JSON.parse(data))
+        if (!result.success) continue
+
+        const [choice]: SseChunkSchema['choices'] = result.data.choices
         if (!choice) continue
 
         const content: string | null = choice.delta.content

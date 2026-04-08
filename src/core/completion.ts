@@ -13,7 +13,7 @@ export const completion = async (options: CompletionOptionsSchema): Promise<stri
     chat_template_kwargs: {
       enable_thinking: false,
     },
-    temperature: options.temperature ?? 0.1,
+    temperature: options.temperature ?? 0.2,
     max_tokens: options.max_tokens ?? 1024,
   }
 

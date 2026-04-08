@@ -7,7 +7,7 @@ export const messageSchema = z.object({
 
 export const responseFormatSchema = z.object({
   type: z.literal('json_object'),
-  schema: z.record(z.string(), z.unknown()),
+  schema: z.record(z.string(), z.unknown()).optional(),
 })
 
 export const completionOptionsSchema = z.object({
@@ -31,7 +31,7 @@ export const choiceSchema = z.object({
 export const sseChunkSchema = z.object({
   choices: z.array(z.object({
     delta: z.object({
-      content: z.string().nullable(),
+      content: z.string(),
     }),
   })),
 })
