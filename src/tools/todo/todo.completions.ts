@@ -39,7 +39,11 @@ export const route = async (sections: Section[], command: string): Promise<Route
 export const indices = async (items: Item[], command: string): Promise<number[]> => {
   const messages = [{
     role: 'system' as const,
-    content: SYSTEM,
+    content: [
+      SYSTEM,
+      'Return indices of the items the command refers to.',
+      'Ignore the action verb (check, uncheck, remove). Focus on which items are named or described.',
+    ].join('\n'),
   }, {
     role: 'user' as const,
     content: `Current list:\n${sectionList(items)}\n\nCommand: ${command}`,

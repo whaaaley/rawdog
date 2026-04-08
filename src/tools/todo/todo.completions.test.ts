@@ -63,16 +63,22 @@ describe('indices', () => {
     assertEquals(result, [1])
   })
 
-  it('resolves multiple indices', async () => {
+  it('resolves multiple indices by name', async () => {
     const result: number[] = await indices(clientItems, 'remove integration tests and e2e tests')
 
     assertEquals(result, [1, 2])
   })
 
-  it('resolves index for first item', async () => {
-    const result: number[] = await indices(serverItems, 'uncheck build auth api')
+  it('resolves all indices', async () => {
+    const result: number[] = await indices(serverItems, 'check all items')
 
-    assertEquals(result, [0])
+    assertEquals(result, [0, 1, 2])
+  })
+
+  it('resolves filtered subset by criteria', async () => {
+    const result: number[] = await indices(clientItems, 'check all test items')
+
+    assertEquals(result, [1, 2])
   })
 })
 
