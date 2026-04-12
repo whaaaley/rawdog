@@ -47,9 +47,14 @@ export const generate = async (options: CommitOptions): Promise<CommitSchema> =>
     }
 
     const parsed = commitSchema.parse(JSON.parse(raw))
+    // Check description length against 125% of maxLength
+    if (parsed.description.length > options.maxLength * 1.25) {
+      debug('commit:generate', { retry: attempt + 1, reason: 'over length', length: parsed.description.length })
+      continue
+    }
 
     return { ...parsed, scope: options.scope }
   }
 
-  throw new Error('commit generation failed: CJK characters in output after retries')
+  throw new Error('commit generation failed after retries')
 }
