@@ -1,8 +1,8 @@
 {
   "tasks": {
     "rd": "deno run --allow-run --allow-net rd.ts",
-    "test": "deno test --allow-read --allow-write --ignore=src/tools/todo/todo.completions.test.ts,src/tools/todo/todo.dogfood.test.ts --coverage=coverage && deno coverage --detailed coverage",
-    "test:llm": "deno test --allow-read --allow-net --allow-env src/tools/todo/todo.completions.test.ts src/tools/todo/todo.dogfood.test.ts"
+    "test": "deno test --allow-read --allow-write --ignore=src/tools/todo/todo.completions.test.ts,src/tools/todo/todo.dogfood.test.ts,src/tools/commit/commit.completions.test.ts --coverage=coverage && deno coverage --detailed coverage",
+    "test:llm": "deno test --fail-fast --allow-read --allow-net --allow-env src/tools/todo/todo.completions.test.ts src/tools/todo/todo.dogfood.test.ts src/tools/commit/commit.completions.test.ts"
   },
   "compilerOptions": {
     "noUnusedLocals": true,
@@ -17,7 +17,8 @@
       "include": [
         "explicit-function-return-type",
         "explicit-module-boundary-types",
-        "no-explicit-any"
+        "no-explicit-any",
+        "no-non-null-assertion"
       ]
     }
   },
