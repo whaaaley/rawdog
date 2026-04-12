@@ -8,7 +8,7 @@ BIN_DIR="$HOME/.local/bin"
 # check for deno
 if ! command -v deno >/dev/null 2>&1; then
   printf "deno is required but not installed. install it now? [Y/n] "
-  read -r answer
+  read -r answer </dev/tty
 
   case "$answer" in
     n|N|no|No|NO)
@@ -30,7 +30,7 @@ fi
 # clone or update
 if [ -d "$INSTALL_DIR" ]; then
   printf "rawdog already exists at %s. update it? [Y/n] " "$INSTALL_DIR"
-  read -r answer
+  read -r answer </dev/tty
 
   case "$answer" in
     n|N|no|No|NO)
@@ -43,7 +43,7 @@ if [ -d "$INSTALL_DIR" ]; then
   esac
 else
   printf "clone rawdog to %s? [Y/n] " "$INSTALL_DIR"
-  read -r answer
+  read -r answer </dev/tty
 
   case "$answer" in
     n|N|no|No|NO)
