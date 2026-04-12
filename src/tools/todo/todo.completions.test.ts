@@ -235,6 +235,7 @@ describe('fuzz regressions', () => {
 
   // case 45: "check all add items" only matched one of two "add" items
   // SKIP: 9B model treats "add" as action verb — returns [2] instead of [2, 5]
+  // SKIP: 9B model treats "add" as action verb — returns [2] instead of [2, 5]
   it.skip('resolves filtered subset for items starting with "add"', async () => {
     const section: Section | undefined = listD.at(0)
     assert(section)
@@ -254,6 +255,7 @@ describe('fuzz regressions', () => {
 
   // case 99: "check all error items" checked everything instead of filtering to index 7
   // SKIP: 9B model ignores "error" as filter keyword — returns all unchecked items
+  // SKIP: 9B model does semantic association not substring match — returns error-adjacent items
   it.skip('filters by keyword when command says "all [keyword] items"', async () => {
     const section: Section | undefined = listG.at(0)
     assert(section)

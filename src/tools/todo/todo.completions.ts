@@ -44,9 +44,9 @@ export const indices = async (items: Item[], command: string): Promise<number[]>
   const messages = [{
     role: 'system' as const,
     content: [
-      SYSTEM,
-      'Return indices of the items the command refers to.',
-      '"and" separates item names. Words like "add", "fix", "write" can be part of an item name.',
+      'Match command → list items → return {"indices": [...]}.',
+      '"all" → every item. "all X items" → only items with word X in text.',
+      '"and" splits names. "add"/"fix"/"write" = item name not action.',
     ].join('\n'),
   }, {
     role: 'user' as const,
