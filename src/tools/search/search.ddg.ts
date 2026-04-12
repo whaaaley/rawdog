@@ -52,7 +52,17 @@ const extractVqd = (html: string): string => {
   return input?.getAttribute('value') ?? ''
 }
 
-const fetchPage1 = async (query: string): Promise<{ results: SearchResult[]; vqd: string }> => {
+const extractNextParams = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  const inputs = doc.querySelectorAll('input[name="nextParams"]')
+
+  // ddgr logic: if two buttons exist, first is prev, second is next
+  // if only one button exists (page 1), it's the next button
+  const last = inputs[inputs.length - 1]
+  return last?.getAttribute('value') ?? ''
+}
+
+const fetchPage1 = async (query: string): Promise<{ results: SearchResult[]; vqd: string; nextParams: string }> => {
   const res = await fetch(DDG_URL, {
     method: 'POST',
     headers: HEADERS,
@@ -74,28 +84,33 @@ const fetchPage1 = async (query: string): Promise<{ results: SearchResult[]; vqd
   const html = await res.text()
   const results = parseResults(html)
   const vqd = extractVqd(html)
+  const nextParams = extractNextParams(html)
 
-  return { results, vqd }
+  return { results, vqd, nextParams }
 }
 
-const fetchPageN = async (query: string, page: number, vqd: string): Promise<SearchResult[]> => {
-  const offset = (page - 1) * PAGE_SIZE
-  const dc = offset + 1
+const fetchPageN = async (query: string, page: number, vqd: string, nextParams: string): Promise<{ results: SearchResult[]; nextParams: string }> => {
+  // ddgr formula: page 1 returns ~30 results, subsequent pages use 50-item offsets
+  const s = 50 * (page - 1) + 30
+  const dc = s + 1
 
   const res = await fetch(DDG_URL, {
     method: 'POST',
     headers: HEADERS,
     body: new URLSearchParams({
       q: query,
-      s: String(offset),
-      nextParams: '',
+      s: String(s),
+      nextParams,
       v: 'l',
       o: 'json',
       dc: String(dc),
-      api: 'd.js',
+      api: '/d.js',
       vqd,
-      k1: '-1',
+      kf: '-1',
+      kh: '1',
       kl: 'us-en',
+      kp: '1',
+      k1: '-1',
     }),
   })
 
@@ -104,7 +119,10 @@ const fetchPageN = async (query: string, page: number, vqd: string): Promise<Sea
   }
 
   const html = await res.text()
-  return parseResults(html)
+  const results = parseResults(html)
+  const newNextParams = extractNextParams(html)
+
+  return { results, nextParams: newNextParams }
 }
 
 export type DdgSearchResult = {
@@ -114,29 +132,31 @@ export type DdgSearchResult = {
 }
 
 export const ddgSearch = async (query: string, page?: number): Promise<DdgSearchResult> => {
-  // No page or page 1: fresh search, save vqd
+  // No page or page 1: fresh search, save vqd and nextParams
   if (!page || page === 1) {
-    const { results, vqd } = await fetchPage1(query)
-    await setState(STATE_TOOL, query, { vqd })
+    const { results, vqd, nextParams } = await fetchPage1(query)
+    await setState(STATE_TOOL, query, { vqd, nextParams })
 
     return { results, page: 1, offset: 0 }
   }
 
-  // Page 2+: read vqd from state
+  // Page 2+: read vqd and nextParams from state
   const cached = await getState(STATE_TOOL, query)
 
   if (!cached) {
-    // No cached vqd, need to fetch page 1 first
-    const { vqd } = await fetchPage1(query)
-    await setState(STATE_TOOL, query, { vqd })
-    const results = await fetchPageN(query, page, vqd)
-    const offset = (page - 1) * PAGE_SIZE
+    // No cached state, need to fetch page 1 first
+    const { vqd, nextParams } = await fetchPage1(query)
+    await setState(STATE_TOOL, query, { vqd, nextParams })
+    const pageResult = await fetchPageN(query, page, vqd, nextParams)
+    await setState(STATE_TOOL, query, { vqd, nextParams: pageResult.nextParams })
+    const offset = 50 * (page - 1) + 30
 
-    return { results, page, offset }
+    return { results: pageResult.results, page, offset }
   }
 
-  const results = await fetchPageN(query, page, cached.vqd)
-  const offset = (page - 1) * PAGE_SIZE
+  const pageResult = await fetchPageN(query, page, cached.vqd, cached.nextParams ?? '')
+  await setState(STATE_TOOL, query, { vqd: cached.vqd, nextParams: pageResult.nextParams })
+  const offset = 50 * (page - 1) + 30
 
-  return { results, page, offset }
+  return { results: pageResult.results, page, offset }
 }

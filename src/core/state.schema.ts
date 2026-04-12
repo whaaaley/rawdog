@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const searchStateSchema = z.object({
   vqd: z.string(),
+  nextParams: z.string().optional(),
 })
 
 export const toolSchemas = {
