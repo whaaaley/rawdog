@@ -46,7 +46,7 @@ const generateQuery = async (topic: string, previousQueries: string[]): Promise<
 }
 
 const search = async (query: string, visited: Set<string>): Promise<SearchResult[]> => {
-  const results: SearchResult[] = await ddgSearch(query)
+  const { results } = await ddgSearch(query)
 
   results.forEach((result, i) => {
     console.error(`  ${i}. ${result.title}`)
