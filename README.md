@@ -6,6 +6,16 @@ LLM tool calling without a harness. optimized for local LLMs.
 - works with any OpenAI-compatible server
 - configure via `rd.config.json`
 
+## install
+
+requires [deno](https://deno.com) and git
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/whaaaley/rawdog/main/scripts/install.sh | sh
+```
+
+clones to `~/.rawdog` and adds `rd` to `~/.local/bin`. prompts before each step
+
 ## config
 
 optional `rd.config.json` in the project root. all fields have defaults
