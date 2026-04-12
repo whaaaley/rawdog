@@ -1,11 +1,11 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { z } from 'zod'
-import { structured } from '../../core/completion.ts'
+import { completion } from '../../core/completion.ts'
 import { config } from '../../core/config.ts'
 import { safeAsync } from '../../utils/safe.utils.ts'
 import { ddgSearch } from '../search/search.ddg.ts'
-import { searchResultSchema, type SearchResult } from '../search/search.schema.ts'
+import { type SearchResult, searchResultSchema } from '../search/search.schema.ts'
 import { fetchPage } from './research.fetch.ts'
 import { summarize } from './research.summarize.ts'
 import { candidatesSchema, querySchema } from './research.schema.ts'
@@ -21,7 +21,7 @@ if (!description) {
 
 const generateQuery = async (topic: string, previousQueries: string[]): Promise<string> => {
   const result = querySchema.parse(JSON.parse(
-    await structured({
+    await completion({
       messages: [{
         role: 'system',
         content: [
@@ -33,7 +33,10 @@ const generateQuery = async (topic: string, previousQueries: string[]): Promise<
         role: 'user',
         content: `Topic: ${topic}\n\nDo not repeat these:\n${previousQueries.map((q, i) => `${i + 1}. ${q}`).join('\n')}`,
       }],
-      schema: z.toJSONSchema(querySchema),
+      response_format: {
+        type: 'json_object',
+        schema: z.toJSONSchema(querySchema),
+      },
       temperature: 0.7,
       max_tokens: 128,
     }),
@@ -57,7 +60,7 @@ const pickCandidates = async (topic: string, results: SearchResult[]): Promise<S
   const resultsText: string = results.map((r, i) => `${i}. ${r.title} — ${r.abstract}`).join('\n')
 
   const result = candidatesSchema.parse(JSON.parse(
-    await structured({
+    await completion({
       messages: [{
         role: 'system',
         content: 'Pick the most relevant search results for the research topic.',
@@ -65,7 +68,10 @@ const pickCandidates = async (topic: string, results: SearchResult[]): Promise<S
         role: 'user',
         content: `Research topic: ${topic}\n\nSearch results:\n${resultsText}`,
       }],
-      schema: z.toJSONSchema(candidatesSchema),
+      response_format: {
+        type: 'json_object',
+        schema: z.toJSONSchema(candidatesSchema),
+      },
       temperature: 0.2,
       max_tokens: 128,
     }),
