@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { structured } from '../../core/completion.ts'
-import { formatResponseSchema, parseResponseSchema, type FormatResponse, type Mode, type ParseResponse } from './rewrite.schema.ts'
+import { completion } from '../../core/completion.ts'
+import { type FormatResponse, formatResponseSchema, type Mode, type ParseResponse, parseResponseSchema } from './rewrite.schema.ts'
 
 const DEONTIC_STRENGTHS: string = [
   'obligatory -> positive imperative: "use consistent whitespace"',
@@ -53,7 +53,7 @@ const formatSystem = (mode: Mode): string =>
 
 export const parse = async (input: string): Promise<ParseResponse> => {
   const result = parseResponseSchema.parse(JSON.parse(
-    await structured({
+    await completion({
       messages: [{
         role: 'system',
         content: PARSE_SYSTEM,
@@ -61,7 +61,10 @@ export const parse = async (input: string): Promise<ParseResponse> => {
         role: 'user',
         content: input,
       }],
-      schema: z.toJSONSchema(parseResponseSchema),
+      response_format: {
+        type: 'json_object',
+        schema: z.toJSONSchema(parseResponseSchema),
+      },
       temperature: 0.2,
       max_tokens: 2048,
     }),
@@ -72,7 +75,7 @@ export const parse = async (input: string): Promise<ParseResponse> => {
 
 export const format = async (parsed: ParseResponse, mode: Mode = 'balanced'): Promise<FormatResponse> => {
   const result = formatResponseSchema.parse(JSON.parse(
-    await structured({
+    await completion({
       messages: [{
         role: 'system',
         content: formatSystem(mode),
@@ -80,7 +83,10 @@ export const format = async (parsed: ParseResponse, mode: Mode = 'balanced'): Pr
         role: 'user',
         content: JSON.stringify(parsed),
       }],
-      schema: z.toJSONSchema(formatResponseSchema),
+      response_format: {
+        type: 'json_object',
+        schema: z.toJSONSchema(formatResponseSchema),
+      },
       temperature: 0.2,
       max_tokens: 2048,
     }),
