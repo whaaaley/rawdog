@@ -7,7 +7,6 @@ import { getState, setState } from '../../core/state.ts'
 // https://github.com/jarun/ddgr
 const DDG_URL: string = config.research.ddgUrl
 const USER_AGENT: string = config.research.userAgent
-export const PAGE_SIZE = 10
 const STATE_TOOL = 'search' as const
 
 const HEADERS: Record<string, string> = {

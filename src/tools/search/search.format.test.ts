@@ -9,7 +9,7 @@ Deno.test('formatHeader — formats basic header', () => {
 })
 
 Deno.test('formatHeader — includes offset in range', () => {
-  const result = formatHeader('Test results', { total: 50, count: 10, limit: 10, offset: 20 })
+  const result = formatHeader('Test results', { total: 50, count: 10, page: 3, offset: 20 })
   assertEquals(result, 'Test results (showing 21-30 of 50, page 3)')
 })
 
@@ -51,7 +51,7 @@ Deno.test('formatResults — passes offset to header', () => {
     label: 'Paged',
     items: ['x'],
     total: 30,
-    limit: 10,
+    page: 2,
     offset: 10,
     renderItem: (item: string): string => item,
   })

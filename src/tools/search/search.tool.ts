@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-net --allow-read --allow-write --allow-env
 
 import { parseArgs } from '@std/cli'
-import { ddgSearch, PAGE_SIZE } from './search.ddg.ts'
+import { ddgSearch } from './search.ddg.ts'
 import { formatResults } from './search.format.ts'
 import { renderSearchResult } from './search.render.ts'
 
@@ -24,13 +24,13 @@ if (page !== undefined && (isNaN(page) || page < 1)) {
   Deno.exit(1)
 }
 
-const { results, offset } = await ddgSearch(String(query), page)
+const { results, page: resultPage, offset } = await ddgSearch(String(query), page)
 
 const output = formatResults({
   label: 'DuckDuckGo results',
   items: results,
   total: offset + results.length,
-  limit: PAGE_SIZE,
+  page: resultPage,
   offset,
   renderItem: renderSearchResult,
 })
