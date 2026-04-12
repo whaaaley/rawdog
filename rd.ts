@@ -31,7 +31,7 @@ if (!name || !commands[name]) {
 }
 
 const cmd = new Deno.Command('deno', {
-  args: ['run', '--allow-run', '--allow-net', '--allow-read', '--allow-write', commands[name], ...args],
+  args: ['run', '--allow-run', '--allow-net', '--allow-read', '--allow-write', '--allow-env', commands[name], ...args],
   stdout: 'inherit',
   stderr: 'inherit',
   stdin: 'inherit',
