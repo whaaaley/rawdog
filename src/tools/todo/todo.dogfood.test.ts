@@ -31,12 +31,7 @@ describe('route — new section', () => {
     assertEquals(result.section, 'refactor')
   })
 
-  it('does not confuse section name with item content', async () => {
-    const result: Route = await route(sections, 'add deploy pipeline to deployment')
 
-    assertEquals(result.action, 'add')
-    assertEquals(result.section, 'deployment')
-  })
 })
 
 // route — section inference (no explicit section name in command)

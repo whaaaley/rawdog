@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { completion } from '../../core/completion2.ts'
+import { completion } from '../../core/completion.ts'
 import { debug } from '../../utils/debug.utils.ts'
 import { compile } from './todo.compile.ts'
 import { editSchema, indicesSchema, insertSchema, routeSchema } from './todo.schema.ts'
@@ -16,7 +16,11 @@ const sectionList = (items: Item[]): string => {
 export const route = async (sections: Section[], command: string): Promise<Route> => {
   const messages = [{
     role: 'system' as const,
-    content: 'Return JSON with "action" and "section" fields.',
+    content: [
+      'Return JSON with "action" and "section" fields.',
+      'For check/uncheck/remove/edit: use the existing section containing the item.',
+      'For add: use the section name from the command — the word after "to" or "in". It may be a new section not in the list.',
+    ].join('\n'),
   }, {
     role: 'user' as const,
     content: `Current list:\n${sections.length === 0 ? '(empty)' : compile(sections)}\n\nCommand: ${command}`,
@@ -42,7 +46,7 @@ export const indices = async (items: Item[], command: string): Promise<number[]>
     content: [
       SYSTEM,
       'Return indices of the items the command refers to.',
-      'Ignore the action verb (check, uncheck, remove). Focus on which items are named or described.',
+      '"and" separates item names. Words like "add", "fix", "write" can be part of an item name.',
     ].join('\n'),
   }, {
     role: 'user' as const,

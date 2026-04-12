@@ -11,8 +11,8 @@ export const sectionSchema = z.object({
 })
 
 export const routeSchema = z.object({
-  section: z.string().describe('Exact section name from the command, not from the current list. Can be a new section.'),
-  action: z.enum(['check', 'uncheck', 'add', 'edit', 'remove']).describe('What to do with the items'),
+  section: z.string().describe('Existing section name for check/uncheck/remove/edit. For add, use the section name from the command.'),
+  action: z.enum(['check', 'uncheck', 'add', 'edit', 'remove']).describe('check = mark done / cross off / finish / complete. uncheck = mark not done.'),
 })
 
 export const indicesSchema = z.object({

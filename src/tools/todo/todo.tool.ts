@@ -3,6 +3,7 @@
 import { add, check, edit, remove, uncheck } from './todo.actions.ts'
 import { compile } from './todo.compile.ts'
 import { indices, insert, rewrite, route } from './todo.completions.ts'
+import { parseDirect, resolveSection, validateIndices, type DirectCommand } from './todo.direct.ts'
 import { load, save } from './todo.io.ts'
 import type { Item, Section } from './todo.schema.ts'
 
@@ -25,8 +26,36 @@ if (!command) {
 }
 
 const sections: Section[] = load()
+const direct: DirectCommand | null = parseDirect(command)
 
-// stage 1: route
+if (direct) {
+  const section: Section | null = resolveSection(sections, direct.section)
+  if (!section) {
+    if (direct.section) {
+      console.error(`Section "${direct.section}" not found`)
+    } else {
+      console.error('Multiple sections — specify section with "in <section>"')
+    }
+    Deno.exit(1)
+  }
+
+  const items: Item[] = section.items
+  const outOfRange: number[] = validateIndices(direct.indices, items.length)
+  if (outOfRange.length > 0) {
+    console.error(`Index out of range: ${outOfRange.join(', ')} (list has ${items.length} items, 0–${items.length - 1})`)
+    Deno.exit(1)
+  }
+
+  if (direct.action === 'check') section.items = check(items, direct.indices)
+  if (direct.action === 'uncheck') section.items = uncheck(items, direct.indices)
+  if (direct.action === 'remove') section.items = remove(items, direct.indices)
+
+  save(sections)
+  list()
+  Deno.exit(0)
+}
+
+// LLM path — stage 1: route
 const { action, section: sectionName } = await route(sections, command)
 
 // find or create section
