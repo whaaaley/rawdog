@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { readAll } from '@std/io'
-import { structured } from '../../core/completion.ts'
-import { jsonObjectSchema, type JsonObject } from './json.schema.ts'
+import { completion } from '../../core/completion.ts'
+import { type JsonObject, jsonObjectSchema } from './json.schema.ts'
 
 const schemaArg: string = Deno.args.join(' ')
 const stdin: string = Deno.stdin.isTerminal() ? '' : new TextDecoder().decode(await readAll(Deno.stdin))
@@ -20,7 +20,7 @@ if (!stdin) {
 
 const schema: JsonObject = jsonObjectSchema.parse(JSON.parse(schemaArg))
 
-const raw: string = await structured({
+const raw: string = await completion({
   messages: [{
     role: 'system',
     content: [
@@ -31,7 +31,10 @@ const raw: string = await structured({
     role: 'user',
     content: stdin,
   }],
-  schema,
+  response_format: {
+    type: 'json_object',
+    schema,
+  },
   temperature: 0.2,
   max_tokens: 4096,
 })

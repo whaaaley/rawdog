@@ -5,8 +5,8 @@ import { completion } from '../../core/completion.ts'
 const description: string = Deno.args.join(' ')
 
 if (!description) {
-  console.error('Usage: rd toSchema \'{ name: string, age: number }\'')
-  console.error('       rd toSchema \'an object with day, time, and attendees array\'')
+  console.error("Usage: rd toSchema '{ name: string, age: number }'")
+  console.error("       rd toSchema 'an object with day, time, and attendees array'")
   Deno.exit(1)
 }
 

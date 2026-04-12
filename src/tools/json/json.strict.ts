@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --allow-net
 
 import { readAll } from '@std/io'
-import { completion, structured } from '../../core/completion.ts'
-import { jsonObjectSchema, type JsonObject } from './json.schema.ts'
+import { completion } from '../../core/completion.ts'
+import { type JsonObject, jsonObjectSchema } from './json.schema.ts'
 
 const toSchema = async (description: string): Promise<string> => {
   return await completion({
@@ -23,7 +23,7 @@ const toSchema = async (description: string): Promise<string> => {
 }
 
 const extract = async (content: string, schema: JsonObject): Promise<string> => {
-  return await structured({
+  return await completion({
     messages: [{
       role: 'system',
       content: [
@@ -34,7 +34,10 @@ const extract = async (content: string, schema: JsonObject): Promise<string> => 
       role: 'user',
       content,
     }],
-    schema,
+    response_format: {
+      type: 'json_object',
+      schema,
+    },
     temperature: 0.2,
     max_tokens: 4096,
   })
