@@ -1,10 +1,8 @@
 # rawdog
 
-> why use many token when few token do trick?
+LLM tool calling without a harness. optimized for local LLMs.
 
-local llm tools. opinionated. zero config. fork to configure
-
-llama.cpp on port 1234 running qwen3.5-9B Q4_K_M
+defaults to localhost:1234 with qwen3.5-9B Q4_K_M (llama.cpp). works with any OpenAI-compatible server. configure via `rd.config.json`
 
 ## config
 
