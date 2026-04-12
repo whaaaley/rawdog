@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { readAll } from '@std/io'
-import { structured } from '../../core/completion.ts'
+import { completion } from '../../core/completion.ts'
 import { type Deontic, deonticSchema } from './express.schema.ts'
 import { render } from './express.render.ts'
 
@@ -75,7 +75,7 @@ if (!entry) {
   Deno.exit(1)
 }
 
-const raw: string = await structured({
+const raw: string = await completion({
   messages: [{
     role: 'system',
     content: entry.prompt,
@@ -83,7 +83,10 @@ const raw: string = await structured({
     role: 'user',
     content: stdin,
   }],
-  schema: z.toJSONSchema(entry.schema),
+  response_format: {
+    type: 'json_object',
+    schema: z.toJSONSchema(entry.schema),
+  },
   temperature: 0.2,
   max_tokens: 4096,
 })
