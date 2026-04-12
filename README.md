@@ -2,7 +2,9 @@
 
 LLM tool calling without a harness. optimized for local LLMs.
 
-defaults to localhost:1234 with qwen3.5-9B Q4_K_M (llama.cpp). works with any OpenAI-compatible server. configure via `rd.config.json`
+- defaults to localhost:1234 with qwen3.5-9B Q4_K_M (llama.cpp)
+- works with any OpenAI-compatible server
+- configure via `rd.config.json`
 
 ## config
 
