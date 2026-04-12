@@ -58,7 +58,7 @@ fi
 
 # prompt before adding to PATH
 printf "add rd to %s? [Y/n] " "$BIN_DIR"
-read -r answer
+read -r answer </dev/tty
 
 case "$answer" in
   n|N|no|No|NO)
