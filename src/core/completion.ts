@@ -1,4 +1,5 @@
-import { chatResponseSchema, type ChatResponseSchema, type ChoiceSchema, type CompletionOptionsSchema, type StructuredOptionsSchema } from './completion.schema.ts'
+import { type ChatResponseSchema, chatResponseSchema, type ChoiceSchema, type CompletionOptionsSchema, type MessageSchema } from './completion.schema.ts'
+import { mergeSystemMessages } from './completion.messages.ts'
 import { config } from './config.ts'
 
 // https://github.com/ggerganov/llama.cpp/blob/master/tools/server/README.md#post-v1chatcompletions
@@ -6,10 +7,24 @@ import { config } from './config.ts'
 const URL: string = config.server.url
 const MODEL: string = config.server.model
 
-export const completion = async (options: CompletionOptionsSchema): Promise<string> => {
+type Meta = {
+  mode?: 'strict' | 'loose'
+}
+
+export const completion = async (options: CompletionOptionsSchema, meta: Meta = {}): Promise<string> => {
+  const mode: 'strict' | 'loose' = meta.mode ?? 'strict'
+  const messages: MessageSchema[] = [...options.messages]
+
+  if (mode === 'loose' && options.response_format && options.response_format.schema) {
+    messages.push({
+      role: 'system',
+      content: `Output only valid JSON matching this schema. No markdown, no code fences, no explanation. ${JSON.stringify(options.response_format.schema)}`,
+    })
+  }
+
   const body: Record<string, unknown> = {
     model: MODEL,
-    messages: options.messages,
+    messages: mergeSystemMessages(messages),
     chat_template_kwargs: {
       enable_thinking: false,
     },
@@ -17,7 +32,7 @@ export const completion = async (options: CompletionOptionsSchema): Promise<stri
     max_tokens: options.max_tokens ?? 1024,
   }
 
-  if (options.response_format) {
+  if (mode === 'strict' && options.response_format) {
     body.response_format = options.response_format
   }
 
@@ -28,6 +43,11 @@ export const completion = async (options: CompletionOptionsSchema): Promise<stri
     },
     body: JSON.stringify(body),
   })
+
+  if (!res.ok) {
+    const text: string = await res.text()
+    throw new Error(`completion failed (${res.status}): ${text}`)
+  }
 
   const data: ChatResponseSchema = chatResponseSchema.parse(await res.json())
   const [choice]: ChoiceSchema[] = data.choices
@@ -41,14 +61,4 @@ export const completion = async (options: CompletionOptionsSchema): Promise<stri
   }
 
   return choice.message.content
-}
-
-export const structured = (options: StructuredOptionsSchema): Promise<string> => {
-  return completion({
-    ...options,
-    response_format: {
-      type: 'json_object',
-      schema: options.schema,
-    },
-  })
 }
