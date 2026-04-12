@@ -11,7 +11,7 @@ LLM tool calling without a harness. optimized for local LLMs.
 requires [deno](https://deno.com) and git
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/whaaaley/rawdog/main/scripts/install.sh | sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/whaaaley/rawdog/main/scripts/install.sh)"
 ```
 
 clones to `~/.rawdog` and adds `rd` to `~/.local/bin`. prompts before each step
