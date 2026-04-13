@@ -22,6 +22,13 @@ export const completion = async (options: CompletionOptionsSchema, meta: Meta = 
     })
   }
 
+  if (mode === 'strict' && options.response_format) {
+    messages.push({
+      role: 'system',
+      content: 'Respond with JSON only.',
+    })
+  }
+
   const body: Record<string, unknown> = {
     model: MODEL,
     messages: mergeSystemMessages(messages),
@@ -30,6 +37,7 @@ export const completion = async (options: CompletionOptionsSchema, meta: Meta = 
     },
     temperature: options.temperature ?? 0.2,
     max_tokens: options.max_tokens ?? 1024,
+    seed: -1,
   }
 
   if (mode === 'strict' && options.response_format) {
