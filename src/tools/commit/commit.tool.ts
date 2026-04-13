@@ -1,17 +1,19 @@
 #!/usr/bin/env -S deno run --allow-run --allow-net --allow-read
 
+import { parseArgs } from '@std/cli'
 import { exec } from '../../utils/exec.utils.ts'
 import { config } from '../../core/config.ts'
 import { confirm } from '../../utils/confirm.utils.ts'
-import { generate } from './commit.completions.ts'
-import { parseNumstat, resolveScope } from './commit.scope.ts'
-import type { CommitSchema } from './commit.schema.ts'
+import { classifyType, classifyScope, generateDescription } from './commit.completions.ts'
+import type { CommitItem } from '../../core/config.schema.ts'
 
-const types: string[] = config.commit.types
-const scopes: string[] = config.commit.scopes
+const args = parseArgs(Deno.args, { string: [] })
+const hint: string | undefined = args._.length > 0 ? String(args._[0]) : undefined
+
+const types: CommitItem[] = config.commit.types
+const scopes: CommitItem[] = config.commit.scopes
 const maxLength: number = config.commit.maxLength
 
-const numstat: string = (await exec('git', ['diff', '--cached', '--numstat'])).stdout
 const diff: string = (await exec('git', ['diff', '--cached'])).stdout
 
 if (!diff) {
@@ -19,11 +21,17 @@ if (!diff) {
   Deno.exit(1)
 }
 
-const files = parseNumstat(numstat)
-const scope: string | undefined = resolveScope(files, scopes)
+// Step 1: generate description (runs first to provide context)
+const rawDescription: string = await generateDescription({ diff, maxLength, hint })
 
-const parsed: CommitSchema = await generate({ diff, types, scope, maxLength })
-const msg: string = parsed.scope ? `${parsed.type}(${parsed.scope}): ${parsed.description}` : `${parsed.type}: ${parsed.description}`
+// Step 2: classify type and scope in parallel (using description + diff)
+const [type, scope]: [string, string | null] = await Promise.all([
+  classifyType({ diff, description: rawDescription, types, hint }),
+  classifyScope({ diff, description: rawDescription, scopes }),
+])
+
+// Step 3: assemble message
+const msg: string = scope ? `${type}(${scope}): ${rawDescription}` : `${type}: ${rawDescription}`
 
 console.log(msg)
 

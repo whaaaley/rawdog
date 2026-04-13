@@ -1,16 +1,52 @@
 import { z } from 'zod'
+import { NONE_SCOPE, type CommitItem } from '../../core/config.schema.ts'
 
-export const commitSchema = z.object({
+// Type classifier — returns one of the allowed types
+
+export const typeSchema = z.object({
   type: z.string(),
+})
+
+export type TypeSchema = z.infer<typeof typeSchema>
+
+export const typeJsonSchema = (types: CommitItem[]): Record<string, unknown> => {
+  const names = types.map((t) => t.name)
+  const schema = z.object({
+    type: z.enum(names),
+  })
+
+  return z.toJSONSchema(schema)
+}
+
+// Scope classifier — returns one of the allowed scopes
+
+export const scopeSchema = z.object({
+  scope: z.string(),
+})
+
+export type ScopeSchema = z.infer<typeof scopeSchema>
+
+export const scopeJsonSchema = (scopes: CommitItem[]): Record<string, unknown> => {
+  const all = [NONE_SCOPE, ...scopes]
+  const names = all.map((s) => s.name)
+  const schema = z.object({
+    scope: z.enum(names),
+  })
+
+  return z.toJSONSchema(schema)
+}
+
+// Description — returns the commit message body
+
+export const descriptionSchema = z.object({
   description: z.string(),
 })
 
-export type CommitSchema = z.infer<typeof commitSchema> & { scope?: string }
+export type DescriptionSchema = z.infer<typeof descriptionSchema>
 
-export const commitJsonSchema = (options: { types: string[] }): Record<string, unknown> => {
+export const descriptionJsonSchema = (maxLength: number): Record<string, unknown> => {
   const schema = z.object({
-    type: z.enum(options.types).describe('.md file → docs. .test. file → test. Otherwise match diff content.'),
-    description: z.string().describe('Lowercase imperative. No period.'),
+    description: z.string().describe(`Lowercase imperative. No period. Under ${maxLength} chars.`),
   })
 
   return z.toJSONSchema(schema)
