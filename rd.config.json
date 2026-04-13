@@ -6,15 +6,15 @@
   "commit": {
     "types": [
       {"name": "feat", "description": "A new user-facing feature in application code"},
-      {"name": "fix", "description": "A bug fix"},
+      {"name": "fix", "description": "A bug fix in application code"},
       {"name": "refactor", "description": "Code restructuring without changing behavior"},
-      {"name": "docs", "description": "Changes to documentation files only, not code comments or config files"},
-      {"name": "chore", "description": "Maintenance, config files, infrastructure, and tooling changes"},
-      {"name": "build", "description": "Changes to the build system or dependencies"},
-      {"name": "test", "description": "Adding or updating tests"},
+      {"name": "docs", "description": "Markdown, readme, or prose documentation files only"},
+      {"name": "chore", "description": "Maintenance, tooling, config files, or infrastructure that is not build or ci"},
+      {"name": "build", "description": "Build system, bundler config, docker, or dependency changes"},
+      {"name": "test", "description": "Adding or updating test files"},
       {"name": "perf", "description": "Performance improvements"},
-      {"name": "style", "description": "Formatting, whitespace, semicolons, no logic change"},
-      {"name": "ci", "description": "Changes to CI/CD configuration and scripts"},
+      {"name": "style", "description": "Formatting, whitespace, semicolons with no logic change"},
+      {"name": "ci", "description": "CI/CD pipelines and workflow files only"},
       {"name": "revert", "description": "Reverting a previous commit"}
     ],
     "scopes": [
