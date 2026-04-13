@@ -18,7 +18,7 @@ export const DEFAULT_TYPES: CommitItem[] = [
   { name: 'build', description: 'Changes to the build system or dependencies' },
   { name: 'chore', description: 'Maintenance, config files, infrastructure, and tooling changes' },
   { name: 'ci', description: 'Changes to CI/CD configuration and scripts' },
-  { name: 'docs', description: 'Documentation-only changes' },
+  { name: 'docs', description: 'Changes to documentation files only, not code comments or config files' },
   { name: 'style', description: 'Formatting, whitespace, semicolons — no logic change' },
   { name: 'refactor', description: 'Code restructuring without changing behavior' },
   { name: 'perf', description: 'Performance improvements' },
