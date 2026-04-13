@@ -14,15 +14,15 @@ export const NONE_SCOPE: CommitItem = { name: 'none', description: 'The change d
 
 export const DEFAULT_TYPES: CommitItem[] = [
   { name: 'feat', description: 'A new user-facing feature in application code' },
-  { name: 'fix', description: 'A bug fix' },
-  { name: 'build', description: 'Changes to the build system or dependencies' },
-  { name: 'chore', description: 'Maintenance, config files, infrastructure, and tooling changes' },
-  { name: 'ci', description: 'Changes to CI/CD configuration and scripts' },
-  { name: 'docs', description: 'Changes to documentation files only, not code comments or config files' },
-  { name: 'style', description: 'Formatting, whitespace, semicolons — no logic change' },
+  { name: 'fix', description: 'A bug fix in application code' },
+  { name: 'build', description: 'Build system, bundler config, docker, or dependency changes' },
+  { name: 'chore', description: 'Maintenance, tooling, config files, or infrastructure that is not build or ci' },
+  { name: 'ci', description: 'CI/CD pipelines and workflow files only' },
+  { name: 'docs', description: 'Markdown, readme, or prose documentation files only' },
+  { name: 'style', description: 'Formatting, whitespace, semicolons with no logic change' },
   { name: 'refactor', description: 'Code restructuring without changing behavior' },
   { name: 'perf', description: 'Performance improvements' },
-  { name: 'test', description: 'Adding or updating tests' },
+  { name: 'test', description: 'Adding or updating test files' },
   { name: 'revert', description: 'Reverting a previous commit' },
 ]
 const DEFAULT_SCOPES: CommitItem[] = []
