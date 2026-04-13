@@ -36,18 +36,4 @@ export const scopeJsonSchema = (scopes: CommitItem[]): Record<string, unknown> =
   return z.toJSONSchema(schema)
 }
 
-// Description — returns the commit message body
-
-export const descriptionSchema = z.object({
-  description: z.string(),
-})
-
-export type DescriptionSchema = z.infer<typeof descriptionSchema>
-
-export const descriptionJsonSchema = (maxLength: number): Record<string, unknown> => {
-  const schema = z.object({
-    description: z.string().describe(`Lowercase imperative. No period. Under ${maxLength} chars.`),
-  })
-
-  return z.toJSONSchema(schema)
-}
+// Description — no longer needs a schema, returned as plain text

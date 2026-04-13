@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert'
 import { describe, it } from '@std/testing/bdd'
 import { DEFAULT_TYPES, type CommitItem } from '../../core/config.schema.ts'
-import { classifyType, classifyScope, generateDescription } from './commit.completions.ts'
+import { summarizeDiff, classifyType, classifyScope, generateDescription } from './commit.completions.ts'
 
 const types: CommitItem[] = [
   ...DEFAULT_TYPES,
@@ -17,15 +17,16 @@ const scopes: CommitItem[] = [
   { name: 'docker', description: 'Docker configuration and container files' },
 ]
 
-// Helper: run full desc-first pipeline for a diff
+// Helper: run full 4-step pipeline for a diff
 const pipeline = async (diff: string, hint?: string): Promise<{ type: string; description: string }> => {
-  const description = await generateDescription({ diff, maxLength: 72, hint })
-  const type = await classifyType({ diff, description, types, hint })
+  const summary = await summarizeDiff({ diff })
+  const type = await classifyType({ summary, types, hint })
+  const description = await generateDescription({ diff, type, maxLength: 72, hint })
 
   return { type, description }
 }
 
-// classifyType (desc-first pipeline)
+// classifyType (summary-first pipeline)
 
 describe('classifyType', () => {
   it('markdown-only change is typed as docs', async () => {
@@ -178,21 +179,14 @@ index abc1234..def5678 100644
 @@ -10,6 +10,7 @@ export const createAgenda = async (input: CreateInput) => {
 +  priority: input.priority,`
 
-    const description = await generateDescription({ diff, maxLength: 72 })
-    const result = await classifyScope({ diff, description, scopes })
+    const summary = await summarizeDiff({ diff })
+    const result = await classifyScope({ summary, scopes })
 
     assertEquals(result, 'server')
   })
 
   it('returns null when no scopes configured', async () => {
-    const diff = `diff --git a/server/src/apps/governance/agenda/agenda.queries.ts b/server/src/apps/governance/agenda/agenda.queries.ts
-index abc1234..def5678 100644
---- a/server/src/apps/governance/agenda/agenda.queries.ts
-+++ b/server/src/apps/governance/agenda/agenda.queries.ts
-@@ -10,6 +10,7 @@ export const createAgenda = async (input: CreateInput) => {
-+  priority: input.priority,`
-
-    const result = await classifyScope({ diff, description: 'add priority field', scopes: [] })
+    const result = await classifyScope({ summary: 'Added priority field to agenda queries in server/src/apps/governance/agenda/agenda.queries.ts', scopes: [] })
 
     assertEquals(result, null)
   })
@@ -206,8 +200,8 @@ index abc1234..def5678 100644
 -# Taskflow
 +# Taskflow Monorepo`
 
-    const description = await generateDescription({ diff, maxLength: 72 })
-    const result = await classifyScope({ diff, description, scopes })
+    const summary = await summarizeDiff({ diff })
+    const result = await classifyScope({ summary, scopes })
 
     assertEquals(result, null)
   })
@@ -225,8 +219,8 @@ index abc1234..0000000
 -deno run -A --watch index.ts &
 -wait -n`
 
-    const description = await generateDescription({ diff, maxLength: 72 })
-    const result = await classifyScope({ diff, description, scopes })
+    const summary = await summarizeDiff({ diff })
+    const result = await classifyScope({ summary, scopes })
 
     assertEquals(result, 'docker')
   })
@@ -251,6 +245,37 @@ index abc1234..def5678 100644
     const validTypes = ['docs', 'chore']
     assertEquals(validTypes.includes(result.type), true, `expected docs/chore, got ${result.type}`)
   })
+
+  it('multi-file ts and json change is not typed as docs', async () => {
+    const diff = `diff --git a/rd.config.json b/rd.config.json
+index 378e232..fb29973 100644
+--- a/rd.config.json
++++ b/rd.config.json
+@@ -6,10 +6,10 @@
+   "commit": {
+     "types": [
+       {"name": "feat", "description": "A new user-facing feature in application code"},
+-      {"name": "fix", "description": "A bug fix"},
++      {"name": "fix", "description": "A bug fix in application code"},
+-      {"name": "docs", "description": "Changes to documentation files only"},
++      {"name": "docs", "description": "Markdown, readme, or prose documentation files only"},
+-      {"name": "chore", "description": "Maintenance, config files, infrastructure"},
++      {"name": "chore", "description": "Maintenance, tooling, config files, or infrastructure"}
+diff --git a/src/core/config.schema.ts b/src/core/config.schema.ts
+index 2a66540..d48a5db 100644
+--- a/src/core/config.schema.ts
++++ b/src/core/config.schema.ts
+@@ -14,8 +14,8 @@ export const DEFAULT_TYPES: CommitItem[] = [
+-  { name: 'fix', description: 'A bug fix' },
++  { name: 'fix', description: 'A bug fix in application code' },
+-  { name: 'docs', description: 'Changes to documentation files only' },
++  { name: 'docs', description: 'Markdown, readme, or prose documentation files only' },`
+
+    const result = await pipeline(diff)
+
+    const invalidTypes = ['docs']
+    assertEquals(invalidTypes.includes(result.type), false, `expected non-docs type, got ${result.type}`)
+  })
 })
 
 // generateDescription
@@ -270,7 +295,7 @@ index abc1234..def5678 100644
 +    await refetch()
 +  }`
 
-    const result = await generateDescription({ diff, maxLength: 72 })
+    const result = await generateDescription({ diff, type: 'refactor', maxLength: 72 })
 
     // Should start with lowercase letter
     assertEquals(/^[a-z]/.test(result), true, `expected lowercase start, got "${result}"`)
