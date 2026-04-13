@@ -15,6 +15,7 @@ export const completionOptionsSchema = z.object({
   response_format: responseFormatSchema.optional(),
   temperature: z.number().optional(),
   max_tokens: z.number().optional(),
+  thinking: z.boolean().optional(),
 })
 
 export const choiceSchema = z.object({

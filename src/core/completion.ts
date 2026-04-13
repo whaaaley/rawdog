@@ -26,7 +26,7 @@ export const completion = async (options: CompletionOptionsSchema, meta: Meta = 
     model: MODEL,
     messages: mergeSystemMessages(messages),
     chat_template_kwargs: {
-      enable_thinking: false,
+      enable_thinking: options.thinking ?? false,
     },
     temperature: options.temperature ?? 0.2,
     max_tokens: options.max_tokens ?? 1024,

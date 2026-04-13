@@ -3,8 +3,29 @@ import { z } from 'zod'
 const DEFAULT_URL: string = 'http://localhost:1234/v1/chat/completions'
 const DEFAULT_MODEL: string = 'qwen3.5-9b'
 
-const DEFAULT_TYPES: string[] = ['feat', 'fix', 'build', 'chore', 'ci', 'docs', 'style', 'refactor', 'perf', 'test', 'revert']
-const DEFAULT_SCOPES: string[] = []
+const commitItemSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+})
+
+export type CommitItem = z.infer<typeof commitItemSchema>
+
+export const NONE_SCOPE: CommitItem = { name: 'none', description: 'The change does not belong to any scope' }
+
+export const DEFAULT_TYPES: CommitItem[] = [
+  { name: 'feat', description: 'A new user-facing feature in application code' },
+  { name: 'fix', description: 'A bug fix' },
+  { name: 'build', description: 'Changes to the build system or dependencies' },
+  { name: 'chore', description: 'Maintenance, config files, infrastructure, and tooling changes' },
+  { name: 'ci', description: 'Changes to CI/CD configuration and scripts' },
+  { name: 'docs', description: 'Documentation-only changes' },
+  { name: 'style', description: 'Formatting, whitespace, semicolons — no logic change' },
+  { name: 'refactor', description: 'Code restructuring without changing behavior' },
+  { name: 'perf', description: 'Performance improvements' },
+  { name: 'test', description: 'Adding or updating tests' },
+  { name: 'revert', description: 'Reverting a previous commit' },
+]
+const DEFAULT_SCOPES: CommitItem[] = []
 const DEFAULT_MAX_LENGTH: number = 96
 
 const DEFAULT_USER_AGENT: string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -21,8 +42,8 @@ const serverSchema = z.object({
 })
 
 const commitSchema = z.object({
-  types: z.array(z.string()).default(DEFAULT_TYPES),
-  scopes: z.array(z.string()).default(DEFAULT_SCOPES),
+  types: z.array(commitItemSchema).default(DEFAULT_TYPES),
+  scopes: z.array(commitItemSchema).default(DEFAULT_SCOPES),
   maxLength: z.number().default(DEFAULT_MAX_LENGTH),
 })
 
