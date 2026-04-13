@@ -24,11 +24,10 @@ if (!diff) {
 // Step 1: generate description (runs first to provide context)
 const rawDescription: string = await generateDescription({ diff, maxLength, hint })
 
-// Step 2: classify type and scope in parallel (using description + diff)
-const [type, scope]: [string, string | null] = await Promise.all([
-  classifyType({ diff, description: rawDescription, types, hint }),
-  classifyScope({ diff, description: rawDescription, scopes }),
-])
+// Step 2: classify type and scope sequentially
+// Parallel requests cause slower model output on local inference
+const type: string = await classifyType({ diff, description: rawDescription, types, hint })
+const scope: string | null = await classifyScope({ diff, description: rawDescription, scopes })
 
 // Step 3: assemble message
 const msg: string = scope ? `${type}(${scope}): ${rawDescription}` : `${type}: ${rawDescription}`
