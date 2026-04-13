@@ -4,8 +4,24 @@
     "model": "qwen3.5-9b"
   },
   "commit": {
-    "types": ["feat", "fix", "refactor", "docs", "chore", "build", "test", "perf", "style", "ci", "revert"],
-    "scopes": ["core", "tools", "utils"],
+    "types": [
+      {"name": "feat", "description": "A new user-facing feature in application code"},
+      {"name": "fix", "description": "A bug fix"},
+      {"name": "refactor", "description": "Code restructuring without changing behavior"},
+      {"name": "docs", "description": "Documentation-only changes"},
+      {"name": "chore", "description": "Maintenance, config files, infrastructure, and tooling changes"},
+      {"name": "build", "description": "Changes to the build system or dependencies"},
+      {"name": "test", "description": "Adding or updating tests"},
+      {"name": "perf", "description": "Performance improvements"},
+      {"name": "style", "description": "Formatting, whitespace, semicolons, no logic change"},
+      {"name": "ci", "description": "Changes to CI/CD configuration and scripts"},
+      {"name": "revert", "description": "Reverting a previous commit"}
+    ],
+    "scopes": [
+      {"name": "core", "description": "Core library code in src/core/"},
+      {"name": "tools", "description": "CLI tools in src/tools/"},
+      {"name": "utils", "description": "Shared utilities in src/utils/"}
+    ],
     "maxLength": 72
   },
   "research": {
