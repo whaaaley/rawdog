@@ -1,8 +1,8 @@
 import type { MessageSchema } from './completion.schema.ts'
 
-// Collapse all system messages into one. Preserves order of non-system messages. Multiple system messages get joined
-// with a space separator and placed at the front. Returns the original array unchanged if there is zero or one system
-// message already.
+// Front placement is required, not tidiness: some chat templates raise rather than reorder when a system message
+// arrives after the first turn.
+// Bonsai 2 answers one with HTTP 500 and the Jinja error `System message must be at the beginning`.
 export const mergeSystemMessages = (messages: MessageSchema[]): MessageSchema[] => {
   const systemParts: string[] = []
   const rest: MessageSchema[] = []
@@ -20,8 +20,9 @@ export const mergeSystemMessages = (messages: MessageSchema[]): MessageSchema[] 
     return rest
   }
 
-  // Already a single system message, return as-is
-  if (systemParts.length === 1 && rest.length === messages.length - 1) {
+  // Testing the first element matters: a lone system message is not necessarily a leading one, and the earlier
+  // length-only check passed a trailing one straight through.
+  if (systemParts.length === 1 && messages[0]?.role === 'system') {
     return messages
   }
 

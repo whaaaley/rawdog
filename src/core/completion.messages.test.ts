@@ -30,6 +30,19 @@ describe('mergeSystemMessages', () => {
     assertEquals(result === messages, true)
   })
 
+  // A single system message has to be hoisted, not passed through on the strength of being alone.
+  it('hoists a single trailing system message to the front', () => {
+    const messages: MessageSchema[] = [
+      { role: 'user', content: 'Describe a red apple.' },
+      { role: 'system', content: 'Respond with JSON only.' },
+    ]
+
+    assertEquals(mergeSystemMessages(messages), [
+      { role: 'system', content: 'Respond with JSON only.' },
+      { role: 'user', content: 'Describe a red apple.' },
+    ])
+  })
+
   it('returns non-system messages when no system messages exist', () => {
     const messages: MessageSchema[] = [
       { role: 'user', content: 'Hello' },
