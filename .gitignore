@@ -1,3 +1,6 @@
 archive/
 coverage/
 tmp_test.ts
+notes/
+bugs/
+node_modules/
