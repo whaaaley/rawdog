@@ -35,8 +35,7 @@ optional `rd.config.json` in the project root. all fields have defaults
     "userAgent": "Mozilla/5.0 ...",
     "maxTextLength": 8000,
     "maxIterations": 3,
-    "ddgUrl": "https://html.duckduckgo.com/html/",
-    "googleUrl": "https://www.google.com/search"
+    "ddgUrl": "https://html.duckduckgo.com/html/"
   }
 }
 ```

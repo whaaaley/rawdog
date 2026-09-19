@@ -1,7 +1,7 @@
 {
   "server": {
     "url": "http://localhost:1234/v1/chat/completions",
-    "model": "qwen3.5-9b"
+    "model": "bonsai-2-27b"
   },
   "commit": {
     "types": [
@@ -27,7 +27,6 @@
   "research": {
     "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "maxTextLength": 8000,
-    "ddgUrl": "https://html.duckduckgo.com/html/",
-    "googleUrl": "https://www.google.com/search"
+    "ddgUrl": "https://html.duckduckgo.com/html/"
   }
 }

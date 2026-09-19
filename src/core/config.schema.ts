@@ -32,7 +32,6 @@ const DEFAULT_USER_AGENT: string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/
 const DEFAULT_MAX_TEXT_LENGTH: number = 8000
 const DEFAULT_MAX_ITERATIONS: number = 3
 const DEFAULT_DDG_URL: string = 'https://html.duckduckgo.com/html/'
-const DEFAULT_GOOGLE_URL: string = 'https://www.google.com/search'
 
 const DEFAULT_TODO_NAME: string = 'TODO.md'
 
@@ -52,7 +51,6 @@ const researchSchema = z.object({
   maxTextLength: z.number().default(DEFAULT_MAX_TEXT_LENGTH),
   maxIterations: z.number().default(DEFAULT_MAX_ITERATIONS),
   ddgUrl: z.string().default(DEFAULT_DDG_URL),
-  googleUrl: z.string().default(DEFAULT_GOOGLE_URL),
 })
 
 const todoSchema = z.object({
@@ -74,7 +72,6 @@ export const configSchema = z.object({
     maxTextLength: DEFAULT_MAX_TEXT_LENGTH,
     maxIterations: DEFAULT_MAX_ITERATIONS,
     ddgUrl: DEFAULT_DDG_URL,
-    googleUrl: DEFAULT_GOOGLE_URL,
   }),
   todo: todoSchema.default({
     name: DEFAULT_TODO_NAME,
