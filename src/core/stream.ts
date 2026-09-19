@@ -52,9 +52,7 @@ export const stream = async (messages: MessageSchema[], options?: StreamOptions)
     }),
   })
 
-  if (!res.body) {
-    throw new Error('No response body')
-  }
+  if (!res.body) throw new Error('No response body')
 
   return res.body.pipeThrough(new TextDecoderStream()).pipeThrough(sse())
 }

@@ -117,9 +117,7 @@ type ClassifyScopeOptions = {
 
 export const classifyScope = async (options: ClassifyScopeOptions): Promise<string | null> => {
   // No scopes configured - skip the completion entirely
-  if (options.scopes.length === 0) {
-    return null
-  }
+  if (options.scopes.length === 0) return null
 
   const jsonSchema = scopeJsonSchema(options.scopes)
 

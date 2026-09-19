@@ -40,9 +40,7 @@ export const completion = async (options: CompletionOptionsSchema, meta: Meta = 
     seed: -1,
   }
 
-  if (mode === 'strict' && options.response_format) {
-    body.response_format = options.response_format
-  }
+  if (mode === 'strict' && options.response_format) body.response_format = options.response_format
 
   const res: Response = await fetch(URL, {
     method: 'POST',
@@ -60,9 +58,7 @@ export const completion = async (options: CompletionOptionsSchema, meta: Meta = 
   const data: ChatResponseSchema = chatResponseSchema.parse(await res.json())
   const [choice]: ChoiceSchema[] = data.choices
 
-  if (!choice) {
-    throw new Error('No choices in response')
-  }
+  if (!choice) throw new Error('No choices in response')
 
   if (choice.finish_reason === 'length') {
     throw new Error(`Response truncated (max_tokens too low): ${choice.message.content}`)

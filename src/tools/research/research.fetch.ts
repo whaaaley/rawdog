@@ -20,9 +20,7 @@ export const fetchPage = async (url: string): Promise<FetchResult> => {
     signal: AbortSignal.timeout(10000),
   })
 
-  if (!res.ok) {
-    return { status: res.status, text: null }
-  }
+  if (!res.ok) return { status: res.status, text: null }
 
   const status: number = res.status
   const html = await res.text()
@@ -34,16 +32,12 @@ export const fetchPage = async (url: string): Promise<FetchResult> => {
 
   if (article?.textContent) {
     const text = article.textContent.trim()
-    if (text.length > 0) {
-      return { status, text: text.slice(0, MAX_TEXT_LENGTH) }
-    }
+    if (text.length > 0) return { status, text: text.slice(0, MAX_TEXT_LENGTH) }
   }
 
   // Fallback: strip tags and grab body text
   const body = doc.querySelector('body')
-  if (!body) {
-    return { status, text: null }
-  }
+  if (!body) return { status, text: null }
 
   // Remove script and style elements
   for (const el of body.querySelectorAll('script, style, nav, footer, header')) {
@@ -52,9 +46,7 @@ export const fetchPage = async (url: string): Promise<FetchResult> => {
 
   const text = body.textContent.trim()
 
-  if (text.length === 0) {
-    return { status, text: null }
-  }
+  if (text.length === 0) return { status, text: null }
 
   return { status, text: text.slice(0, MAX_TEXT_LENGTH) }
 }

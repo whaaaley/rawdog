@@ -38,9 +38,7 @@ const msg: string = scope ? `${type}(${scope}): ${description}` : `${type}: ${de
 
 console.log(msg)
 
-if (!await confirm('Commit?')) {
-  Deno.exit(0)
-}
+if (!await confirm('Commit?')) Deno.exit(0)
 
 const commit: Deno.Command = new Deno.Command('git', { args: ['commit', '-m', msg], stdout: 'inherit', stderr: 'inherit' })
 const output: Deno.CommandOutput = await commit.output()

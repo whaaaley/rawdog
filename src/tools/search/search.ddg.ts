@@ -29,17 +29,13 @@ const parseResults = (html: string): SearchResult[] => {
 
   for (let i = 0; i < links.length; i++) {
     const link = links[i]
-    if (!link) {
-      continue
-    }
+    if (!link) continue
 
     const title = link.textContent.trim()
     const href = link.getAttribute('href') ?? ''
     const abstract = snippets[i]?.textContent.trim() ?? ''
 
-    if (title && href) {
-      results.push(searchResultSchema.parse({ title, url: href, abstract }))
-    }
+    if (title && href) results.push(searchResultSchema.parse({ title, url: href, abstract }))
   }
 
   return results
@@ -76,9 +72,7 @@ const fetchPage1 = async (query: string): Promise<{ results: SearchResult[]; vqd
     }),
   })
 
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
 
   const html = await res.text()
   const results = parseResults(html)
@@ -113,9 +107,7 @@ const fetchPageN = async (query: string, page: number, vqd: string, nextParams: 
     }),
   })
 
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
 
   const html = await res.text()
   const results = parseResults(html)

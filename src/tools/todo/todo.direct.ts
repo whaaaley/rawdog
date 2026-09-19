@@ -51,9 +51,7 @@ export const validateIndices = (indices: number[], itemCount: number): number[] 
 }
 
 export const resolveSection = (sections: Section[], sectionName: string | null): Section | null => {
-  if (sectionName) {
-    return sections.find((s) => s.name === sectionName) ?? null
-  }
+  if (sectionName) return sections.find((s) => s.name === sectionName) ?? null
   if (sections.length === 1) {
     const only: Section | undefined = sections.at(0)
     return only ?? null

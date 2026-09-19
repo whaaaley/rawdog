@@ -9,9 +9,7 @@ const FILE: string = new URL(`../../../${config.todo.name}`, import.meta.url).pa
 export const load = (): Section[] => {
   const result = safe(() => Deno.readTextFileSync(FILE))
 
-  if (result.error) {
-    return []
-  }
+  if (result.error) return []
 
   return parse(result.data)
 }

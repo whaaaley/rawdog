@@ -118,9 +118,7 @@ const research = (topic: string): Promise<string[]> => {
   const visited: Set<string> = new Set()
 
   const loop = async (iteration: number): Promise<string[]> => {
-    if (iteration >= MAX_ITERATIONS) {
-      return context
-    }
+    if (iteration >= MAX_ITERATIONS) return context
 
     const query: string = await generateQuery(topic, queries)
     queries.push(query)

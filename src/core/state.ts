@@ -8,15 +8,11 @@ const STATE_PATH = join(Deno.env.get('TMPDIR') ?? '/tmp', STATE_FILENAME)
 const readAll = async (): Promise<StateData> => {
   const { data: raw, error } = await safeAsync(() => Deno.readTextFile(STATE_PATH))
 
-  if (error) {
-    return {}
-  }
+  if (error) return {}
 
   const { data: parsed, error: parseError } = safe(() => stateSchema.parse(JSON.parse(raw)))
 
-  if (parseError) {
-    return {}
-  }
+  if (parseError) return {}
 
   return parsed
 }
@@ -29,23 +25,17 @@ export const getState = async (tool: ToolName, key: string): Promise<ToolEntry<t
   const state = await readAll()
   const toolState = state[tool]
 
-  if (!toolState) {
-    return null
-  }
+  if (!toolState) return null
 
   const raw = toolState[key]
 
-  if (!raw) {
-    return null
-  }
+  if (!raw) return null
 
   // Re-parse the individual entry through its schema
   const entrySchema = toolSchemas[tool].valueType
   const { data, error } = safe(() => entrySchema.parse(raw))
 
-  if (error) {
-    return null
-  }
+  if (error) return null
 
   return data
 }
@@ -57,9 +47,7 @@ export const setState = async (tool: ToolName, key: string, value: ToolEntry<typ
 
   const { data: validated, error } = safe(() => toolSchemas[tool].parse(updated))
 
-  if (error) {
-    throw new Error(`Invalid state for ${tool}: ${error.message}`)
-  }
+  if (error) throw new Error(`Invalid state for ${tool}: ${error.message}`)
 
   state[tool] = validated
   await writeAll(state)
@@ -69,9 +57,7 @@ export const clearState = async (tool: ToolName, key: string): Promise<void> => 
   const state = await readAll()
   const toolState = state[tool]
 
-  if (!toolState) {
-    return
-  }
+  if (!toolState) return
 
   const { [key]: _, ...rest } = toolState
   state[tool] = rest

@@ -23,9 +23,7 @@ export const items = (node: RootContent): Item[] => {
     if (!paragraph || paragraph.type !== 'paragraph') continue
 
     const [text]: PhrasingContent[] = paragraph.children
-    if (text && text.type === 'text') {
-      result.push({ content: text.value, done: li.checked === true })
-    }
+    if (text && text.type === 'text') result.push({ content: text.value, done: li.checked === true })
   }
 
   return result
