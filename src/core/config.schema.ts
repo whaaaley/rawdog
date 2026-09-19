@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const DEFAULT_URL: string = 'http://localhost:1234/v1/chat/completions'
-const DEFAULT_MODEL: string = 'qwen3.5-9b'
+const DEFAULT_MODEL: string = 'bonsai-2-27b'
 
 const commitItemSchema = z.object({
   name: z.string(),

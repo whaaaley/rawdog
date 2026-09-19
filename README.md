@@ -2,9 +2,13 @@
 
 LLM tool calling without a harness. optimized for local LLMs.
 
-- defaults to localhost:1234 with qwen3.5-9B Q4_K_M (llama.cpp)
+- defaults to localhost:1234 with Ternary Bonsai 2 27B (llama.cpp)
 - works with any OpenAI-compatible server
 - configure via `rd.config.json`
+
+Bonsai 2 is a ternary quantisation of Qwen3.8-27B that fits an 8 GB card, so a 27B runs locally where the Q4 would not.
+It needs the `PrismML-Eng/llama.cpp` fork: stock llama.cpp rejects `PTQ1_0` outright, and loads a legacy `Q2_0` without warning while producing garbage.
+Its chat template also requires the system message to come first, which `mergeSystemMessages` enforces.
 
 ## install
 
@@ -24,7 +28,7 @@ optional `rd.config.json` in the project root. all fields have defaults
 {
   "server": {
     "url": "http://localhost:1234/v1/chat/completions",
-    "model": "qwen3.5-9b"
+    "model": "bonsai-2-27b"
   },
   "commit": {
     "types": ["feat", "fix", "build", "chore", "ci", "docs", "style", "refactor", "perf", "test", "revert"],
@@ -194,7 +198,7 @@ four tools, pick your tradeoff
 
 no validation errors. the grammar forces the output to match the schema exactly
 
-benchmarks on qwen3.5-9B Q4_K_M, RTX 2080, 32k context (cold, single run):
+benchmarks on qwen3.5-9B Q4_K_M, the previous default, RTX 2080, 32k context (cold, single run):
 
 ```
 toSchema     ~2s   (1 unconstrained call)
